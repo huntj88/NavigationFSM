@@ -1,0 +1,4 @@
+include ':app', ':NavigationFSM'
+
+project(':NavigationFSM').projectDir = new File('../')
+rootProject.name = "Example"
