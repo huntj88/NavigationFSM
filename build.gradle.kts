@@ -22,7 +22,11 @@ kotlin {
         }
     }
     sourceSets {
-        val commonMain by getting {}
+        val commonMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
@@ -31,10 +35,16 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
                 implementation("androidx.core:core-ktx:1.2.0")
             }
         }
-        val androidTest by getting {}
+        val androidTest by getting {
+            dependencies {
+                implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+            }
+        }
         val iosMain by getting {}
         val iosTest by getting {}
     }
@@ -42,7 +52,7 @@ kotlin {
 android {
     compileSdkVersion(29)
     defaultConfig {
-        minSdkVersion(24)
+        minSdkVersion(21)
         targetSdkVersion(29)
         versionCode = 1
         versionName = "1.0"
