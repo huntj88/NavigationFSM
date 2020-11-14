@@ -1,23 +1,27 @@
 package me.jameshunt.navfsm
 
-import android.os.Handler
-import android.util.Log
+import android.graphics.Color
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CompletableDeferred
 import me.jameshunt.navfsm.test.LoginNavFSM
 import me.jameshunt.navfsm.test.LoginUIProxy
 import java.lang.ref.WeakReference
-import java.util.concurrent.Executors
 
 class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.ProvidedCredentials>() {
 
-    init {
-        Executors.newSingleThreadExecutor().execute {
-            Thread.sleep(1000)
-
-            Handler(requireActivity().mainLooper).post {
-                complete(LoginNavFSM.ProvidedCredentials("wow", "sup"))
-            }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = View(context).apply {
+        setBackgroundColor(Color.BLUE)
+        setOnClickListener {
+            val output = LoginNavFSM.ProvidedCredentials("wow", "wow")
+            complete(output)
         }
     }
 }
@@ -52,7 +56,6 @@ class LoginUIProxyImpl : LoginUIProxy, AndroidUIProxy {
 
     internal fun saveState() {
         this.fragment?.get()?.let {
-            it as Fragment
             // We can't save the state of a Fragment that isn't added to a FragmentManager.
             if (it.isAdded) {
                 this.state = it.fragmentManager?.saveFragmentInstanceState(it)
@@ -62,7 +65,6 @@ class LoginUIProxyImpl : LoginUIProxy, AndroidUIProxy {
 
     private fun restoreState(fragment: NavFSMFragment<*, *>) {
         this.state?.let {
-            fragment as Fragment
             // Can't set initial state if already added
             if (!fragment.isAdded) {
                 fragment.setInitialSavedState(this.state)

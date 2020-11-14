@@ -1,11 +1,21 @@
 package me.jameshunt.navfsm
 
-import kotlin.reflect.KClass
+interface State
 
 sealed class FSMResult<out T> {
     data class Complete<T>(val data: T) : FSMResult<T>()
     data class Error(val error: Throwable) : FSMResult<Nothing>()
     object Back : FSMResult<Nothing>()
+}
+
+suspend fun <Result, NextState : State> FSMResult<Result>.onResult(
+    onComplete: suspend (Result) -> NextState = { TODO() },
+    onBack: suspend () -> NextState = { TODO() },
+    onError: suspend (Throwable) -> NextState = { TODO() }
+): NextState = when (this) {
+    is FSMResult.Complete -> onComplete(this.data)
+    is FSMResult.Back -> onBack()
+    is FSMResult.Error -> onError(this.error)
 }
 
 interface FSM<Input, Output> {
@@ -25,10 +35,12 @@ suspend fun <In, Out> FSM<*, *>.flow(flow: FSM<In, Out>, input: In): FSMResult<O
     return flow.run(input)
 }
 
-suspend inline fun <reified In, reified Out> FSM<*, *>.flow(ui: KClass<*>, input: In): FSMResult<Out> {
-    val uiInstance = FSMManager.uiRegistry.getUI<In, Out>(ui)
+suspend inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSM<*, *>.flow(
+    proxy: Proxy,
+    input: In
+): FSMResult<Out> {
     val node = FSMManager.root.getNodeFor(this) ?: throw IllegalStateException()
-    return node.platformOperations.showUI(uiInstance, input)
+    return node.platformOperations.showUI(proxy, input)
 }
 
 data class FSMTreeNode(

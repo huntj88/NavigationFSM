@@ -21,5 +21,5 @@ interface UIProxy<In, Out> {
 interface PlatformDependencies
 
 interface PlatformOperations {
-    suspend fun <In, Out> showUI(ui: UIProxy<In, Out>, input: In): FSMResult<Out>
+    suspend fun <In, Out> showUI(proxy: UIProxy<In, Out>, input: In): FSMResult<Out>
 }

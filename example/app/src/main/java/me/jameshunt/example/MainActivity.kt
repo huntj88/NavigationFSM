@@ -32,7 +32,7 @@ class App : Application() {
 
         FSMManager.init(
             scope = flowScope,
-            initialFlow = LoginNavFSMImpl(),
+            getInitialFlow = { LoginNavFSMImpl() },
             uiRegistry = mapOf(
                 LoginUIProxy::class as KClass<UIProxy<*, *>> to { LoginUIProxyImpl() }
             ),
