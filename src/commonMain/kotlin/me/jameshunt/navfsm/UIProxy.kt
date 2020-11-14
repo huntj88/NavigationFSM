@@ -3,7 +3,6 @@ package me.jameshunt.navfsm
 import kotlinx.coroutines.CompletableDeferred
 
 interface UIProxy<In, Out> {
-    val type: Type
     var input: In?
 
     val completableDeferred: CompletableDeferred<FSMResult<Out>>

@@ -22,7 +22,7 @@ class ErrorDialog: NavFSMDialogFragment<String, Unit>() {
     }
 }
 
-
+// generated
 class ErrorUIProxyImpl : ErrorUIProxy, DialogProxy {
 
     override var completableDeferred: CompletableDeferred<FSMResult<Unit>> = CompletableDeferred(FSMResult.Back)

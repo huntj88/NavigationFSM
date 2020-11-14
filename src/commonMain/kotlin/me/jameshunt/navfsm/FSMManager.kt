@@ -1,15 +1,17 @@
 package me.jameshunt.navfsm
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
+inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSMManager.proxy(): Proxy {
+    return Proxy::class
+        .let { it as? KClass<UIProxy<*, *>> ?: error("KClass is not a FlowUI: ${Proxy::class}") }
+        .let { uiRegistry[it] ?: error("missing ui registration for ${Proxy::class}")}
+        .invoke() as Proxy
+}
+
 typealias UIRegistry = Map<KClass<UIProxy<*, *>>, () -> UIProxy<*, *>>
-inline fun <reified Proxy : UIProxy<In, Out>, In, Out> UIRegistry.getProxyInstance(): Proxy = Proxy::class
-    .let { it as? KClass<UIProxy<*, *>> ?: error("KClass is not a FlowUI: ${Proxy::class}") }
-    .let { this[it] ?: error("missing ui registration for ${Proxy::class}")}
-    .invoke() as Proxy
 
 object FSMManager {
     private var _root: FSMTreeNode? = null

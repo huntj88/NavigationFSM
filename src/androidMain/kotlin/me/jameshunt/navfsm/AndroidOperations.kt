@@ -31,9 +31,10 @@ class AndroidOperations(
     }
 
     override suspend fun <In, Out> showUI(proxy: UIProxy<In, Out>, input: In): FSMResult<Out> {
-        val deferred = when (proxy.type) {
-            UIProxy.Type.Screen -> showFragment(proxy as FragmentProxy).flowForResultAsync()
-            UIProxy.Type.Dialog -> showDialog(proxy as DialogProxy).flowForResultAsync()
+        val deferred = when (proxy) {
+            is FragmentProxy -> showFragment(proxy).flowForResultAsync()
+            is DialogProxy -> showDialog(proxy).flowForResultAsync()
+            else -> TODO("$proxy")
         }
 
         return deferred.await() as FSMResult<Out>

@@ -26,6 +26,7 @@ class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.ProvidedCredentials>() {
     }
 }
 
+// generated
 class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
 
     override var completableDeferred: CompletableDeferred<FSMResult<LoginNavFSM.ProvidedCredentials>> =

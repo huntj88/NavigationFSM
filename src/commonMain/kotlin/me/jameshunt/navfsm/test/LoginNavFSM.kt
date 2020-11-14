@@ -7,6 +7,7 @@ import me.jameshunt.navfsm.*
 import me.jameshunt.navfsm.test.LoginNavFSM.*
 import me.jameshunt.navfsm.test.LoginNavFSM.LoginFlowState.*
 
+// generated
 interface LoginNavFSM: FSM<Unit, Unit> {
     data class ProvidedCredentials(val username: String, val password: String)
 
@@ -70,8 +71,8 @@ interface LoginNavFSM: FSM<Unit, Unit> {
 
 class LoginNavFSMImpl: LoginNavFSM, FSM<Unit, Unit> {
 
-    private val loginUIProxy = FSMManager.uiRegistry.getProxyInstance<LoginUIProxy, Unit, ProvidedCredentials>()
-    private val errorDialogProxy = FSMManager.uiRegistry.getProxyInstance<ErrorUIProxy, String, Unit>()
+    private val loginUIProxy = FSMManager.proxy<LoginUIProxy, Unit, ProvidedCredentials>()
+    private val errorDialogProxy = FSMManager.proxy<ErrorUIProxy, String, Unit>()
 
     override suspend fun onShowForm(): StateAfterShowForm {
         return flow(proxy = loginUIProxy, input = Unit).onResult(
@@ -94,12 +95,5 @@ class LoginNavFSMImpl: LoginNavFSM, FSM<Unit, Unit> {
     }
 }
 
-interface LoginUIProxy: UIProxy<Unit, ProvidedCredentials> {
-    override val type: UIProxy.Type
-        get() = UIProxy.Type.Screen
-}
-
-interface ErrorUIProxy: UIProxy<String, Unit> {
-    override val type: UIProxy.Type
-        get() = UIProxy.Type.Dialog
-}
+interface LoginUIProxy: UIProxy<Unit, ProvidedCredentials>
+interface ErrorUIProxy: UIProxy<String, Unit>
