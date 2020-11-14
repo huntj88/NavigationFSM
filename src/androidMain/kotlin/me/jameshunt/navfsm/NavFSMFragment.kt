@@ -1,5 +1,6 @@
 package me.jameshunt.navfsm
 
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.Deferred
 
@@ -9,7 +10,6 @@ sealed class AndroidUIInput<out Input> {
 }
 
 abstract class NavFSMFragment<Input, Output> : Fragment() {
-
     var proxy: UIProxy<Input, Output>? = null
 
     private var newInput = false
@@ -33,4 +33,43 @@ abstract class NavFSMFragment<Input, Output> : Fragment() {
     fun error(error: Throwable) {
         this.proxy!!.error(error)
     }
+}
+
+abstract class NavFSMDialogFragment<Input, Output> : DialogFragment() {
+    var proxy: UIProxy<Input, Output>? = null
+
+    private var newInput = false
+
+    fun flowForResultAsync(): Deferred<FSMResult<Output>> {
+        newInput = true
+        return proxy!!.completableDeferred
+    }
+
+    fun getAndConsumeInputData(): AndroidUIInput<Input> {
+        return when(newInput) {
+            true -> AndroidUIInput.NewData(proxy!!.input) as AndroidUIInput<Input>
+            false -> AndroidUIInput.ResumeSavedState
+        }.also { newInput = false }
+    }
+
+    fun complete(output: Output) {
+        this.proxy!!.complete(output)
+        dismiss()
+    }
+
+    fun error(error: Throwable) {
+        this.proxy!!.error(error)
+        dismiss()
+    }
+
+//    TODO
+//    override fun onDismiss(dialog: DialogInterface) {
+//        super.onDismiss(dialog)
+//
+//        // DialogFragments are kept around in FragmentManager memory longer,
+//        // don't let it resolve if fragment is from old activity
+//        if(proxy?.fragment?.get() == this) {
+//            proxy?.back()
+//        }
+//    }
 }

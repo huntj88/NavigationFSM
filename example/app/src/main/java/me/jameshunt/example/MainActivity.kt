@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import me.jameshunt.navfsm.*
+import me.jameshunt.navfsm.test.ErrorUIProxy
 import me.jameshunt.navfsm.test.LoginNavFSMImpl
 import me.jameshunt.navfsm.test.LoginUIProxy
 import kotlin.reflect.KClass
@@ -34,7 +35,8 @@ class App : Application() {
             scope = flowScope,
             getInitialFlow = { LoginNavFSMImpl() },
             uiRegistry = mapOf(
-                LoginUIProxy::class as KClass<UIProxy<*, *>> to { LoginUIProxyImpl() }
+                LoginUIProxy::class as KClass<UIProxy<*, *>> to { LoginUIProxyImpl() },
+                ErrorUIProxy::class as KClass<UIProxy<*, *>> to { ErrorUIProxyImpl() }
             ),
             platformOperations = AndroidOperations(R.id.fragment_container) {
                 (FSMManager.platformDependencies as AndroidDependencies).fragmentManager

@@ -72,6 +72,9 @@ class LoginUIProxyImpl : LoginUIProxy, AndroidUIProxy {
         }
     }
 
+    override fun dialogInstance(): NavFSMDialogFragment<*, *> = error("will not be implemented")
+    override fun bind(dialog: NavFSMDialogFragment<*, *>) = error("will not be implemented")
+
     override fun fragmentInstance(): NavFSMFragment<*, *> = LoginFragment()
     override fun bind(fragment: NavFSMFragment<*, *>) {
         fragment as LoginFragment

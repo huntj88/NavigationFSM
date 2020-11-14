@@ -71,6 +71,7 @@ interface LoginNavFSM: FSM<Unit, Unit> {
 class LoginNavFSMImpl: LoginNavFSM, FSM<Unit, Unit> {
 
     private val loginUIProxy = FSMManager.uiRegistry.getProxyInstance<LoginUIProxy, Unit, ProvidedCredentials>()
+    private val errorDialogProxy = FSMManager.uiRegistry.getProxyInstance<ErrorUIProxy, String, Unit>()
 
     override suspend fun onShowForm(): StateAfterShowForm {
         return flow(proxy = loginUIProxy, input = Unit).onResult(
@@ -79,22 +80,26 @@ class LoginNavFSMImpl: LoginNavFSM, FSM<Unit, Unit> {
     }
 
     override suspend fun onAttemptLogin(credentials: ProvidedCredentials): StateAfterAttemptLogin {
-        return when (credentials.username == "wow" && credentials.password == "wow") {
+        return when (credentials.username == "wow" && credentials.password == "not wow") {
             true -> toDone()
             false -> toShowError("invalid credentials")
         }
     }
 
     override suspend fun onShowError(message: String): StateAfterShowError {
-        return when(val result = flow(LoginNavFSMImpl(), Unit)) {
-            is FSMResult.Complete -> toShowForm()
-            is FSMResult.Back -> toShowForm()
-            is FSMResult.Error -> TODO()
-        }
+        return flow(proxy = errorDialogProxy, input = message).onResult(
+            onComplete = { toShowForm() },
+            onBack = { toShowForm() }
+        )
     }
 }
 
 interface LoginUIProxy: UIProxy<Unit, ProvidedCredentials> {
     override val type: UIProxy.Type
         get() = UIProxy.Type.Screen
+}
+
+interface ErrorUIProxy: UIProxy<String, Unit> {
+    override val type: UIProxy.Type
+        get() = UIProxy.Type.Dialog
 }
