@@ -20,29 +20,37 @@ object FSMManager {
     val uiRegistry: UIRegistry
         get() = _uiRegistry ?: throw IllegalStateException()
 
-    lateinit var platformDependencies: PlatformDependencies
+    private var _platformDependencies: PlatformDependencies? = null
+    val platformDependencies: PlatformDependencies
+        get() = _platformDependencies ?: throw IllegalStateException()
 
     fun init(
         scope: CoroutineScope,
         getInitialFlow: () -> FSM<Unit, Unit>,
         uiRegistry: UIRegistry,
-        platformOperations: PlatformOperations
-    ): Job {
-        return scope.launch {
-            _uiRegistry = uiRegistry
-            _root = FSMTreeNode(
-                flow = getInitialFlow(),
-                children = mutableListOf(),
-                platformOperations = platformOperations
-            )
+        platformOperations: PlatformOperations,
+        platformDependencies: PlatformDependencies
+    ) {
+        _platformDependencies = platformDependencies
 
-            (root.flow as FSM<Unit, Unit>).run(Unit).let {
-                when (it) {
-                    is FSMResult.Complete -> TODO()
-                    is FSMResult.Error -> throw it.error
-                    is FSMResult.Back -> TODO()
+        when (_root == null) {
+            true -> scope.launch {
+                _uiRegistry = uiRegistry
+                _root = FSMTreeNode(
+                    flow = getInitialFlow(),
+                    children = mutableListOf(),
+                    platformOperations = platformOperations
+                )
+
+                (root.flow as FSM<Unit, Unit>).run(Unit).let {
+                    when (it) {
+                        is FSMResult.Complete -> TODO()
+                        is FSMResult.Error -> throw it.error
+                        is FSMResult.Back -> TODO()
+                    }
                 }
             }
+            false -> root.platformOperations.resume()
         }
     }
 }

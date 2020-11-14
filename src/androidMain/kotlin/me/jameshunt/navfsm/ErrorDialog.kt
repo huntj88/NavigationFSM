@@ -23,7 +23,7 @@ class ErrorDialog: NavFSMDialogFragment<String, Unit>() {
 }
 
 
-class ErrorUIProxyImpl : ErrorUIProxy, AndroidUIProxy {
+class ErrorUIProxyImpl : ErrorUIProxy, DialogProxy {
 
     override var completableDeferred: CompletableDeferred<FSMResult<Unit>> = CompletableDeferred(FSMResult.Back)
         get() {
@@ -31,7 +31,7 @@ class ErrorUIProxyImpl : ErrorUIProxy, AndroidUIProxy {
             return field
         }
 
-    internal var dialog: WeakReference<NavFSMDialogFragment<*, *>>? = null
+    override var dialog: WeakReference<NavFSMDialogFragment<*, *>>? = null
     private var state: Fragment.SavedState? = null
     override var input: String? = null
 
@@ -68,10 +68,7 @@ class ErrorUIProxyImpl : ErrorUIProxy, AndroidUIProxy {
         }
     }
 
-    override fun bind(fragment: NavFSMFragment<*, *>) = error("will not be implemented")
-    override fun fragmentInstance(): NavFSMFragment<*, *> = error("will not be implemented")
-
-    override fun dialogInstance(): NavFSMDialogFragment<*, *> = ErrorDialog()
+    override fun newDialogInstance(): NavFSMDialogFragment<*, *> = ErrorDialog()
     override fun bind(dialog: NavFSMDialogFragment<*, *>) {
         dialog as ErrorDialog
         this.restoreState(dialog)

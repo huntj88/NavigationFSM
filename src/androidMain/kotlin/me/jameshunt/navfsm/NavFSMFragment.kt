@@ -1,5 +1,6 @@
 package me.jameshunt.navfsm
 
+import android.content.DialogInterface
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.Deferred
@@ -62,14 +63,13 @@ abstract class NavFSMDialogFragment<Input, Output> : DialogFragment() {
         dismiss()
     }
 
-//    TODO
-//    override fun onDismiss(dialog: DialogInterface) {
-//        super.onDismiss(dialog)
-//
-//        // DialogFragments are kept around in FragmentManager memory longer,
-//        // don't let it resolve if fragment is from old activity
-//        if(proxy?.fragment?.get() == this) {
-//            proxy?.back()
-//        }
-//    }
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+
+        // DialogFragments are kept around in FragmentManager memory longer,
+        // don't let it resolve if fragment is from old activity
+        if((proxy as? DialogProxy)?.dialog?.get() == this) {
+            proxy?.back()
+        }
+    }
 }

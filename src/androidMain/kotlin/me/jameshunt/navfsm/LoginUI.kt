@@ -26,7 +26,7 @@ class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.ProvidedCredentials>() {
     }
 }
 
-class LoginUIProxyImpl : LoginUIProxy, AndroidUIProxy {
+class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
 
     override var completableDeferred: CompletableDeferred<FSMResult<LoginNavFSM.ProvidedCredentials>> =
         CompletableDeferred(FSMResult.Back)
@@ -35,7 +35,7 @@ class LoginUIProxyImpl : LoginUIProxy, AndroidUIProxy {
             return field
         }
 
-    internal var fragment: WeakReference<NavFSMFragment<*, *>>? = null
+    override var fragment: WeakReference<NavFSMFragment<*, *>>? = null
     private var state: Fragment.SavedState? = null
     override var input: Unit? = Unit
 
@@ -72,10 +72,7 @@ class LoginUIProxyImpl : LoginUIProxy, AndroidUIProxy {
         }
     }
 
-    override fun dialogInstance(): NavFSMDialogFragment<*, *> = error("will not be implemented")
-    override fun bind(dialog: NavFSMDialogFragment<*, *>) = error("will not be implemented")
-
-    override fun fragmentInstance(): NavFSMFragment<*, *> = LoginFragment()
+    override fun newFragmentInstance(): NavFSMFragment<*, *> = LoginFragment()
     override fun bind(fragment: NavFSMFragment<*, *>) {
         fragment as LoginFragment
         this.restoreState(fragment)

@@ -20,19 +20,9 @@ class MainActivity : AppCompatActivity() {
 
         layoutInflater.inflate(R.layout.fullscreen_fragment_container, navFSMContainer, true)
 
-        FSMManager.platformDependencies = AndroidDependencies(supportFragmentManager)
-    }
-}
-
-class App : Application() {
-    private val job = Job()
-    private val flowScope = CoroutineScope(job + Dispatchers.Main)
-
-    override fun onCreate() {
-        super.onCreate()
-
         FSMManager.init(
-            scope = flowScope,
+            platformDependencies = AndroidDependencies(supportFragmentManager),
+            scope = (application as App).fsmNavScope,
             getInitialFlow = { LoginNavFSMImpl() },
             uiRegistry = mapOf(
                 LoginUIProxy::class as KClass<UIProxy<*, *>> to { LoginUIProxyImpl() },
@@ -43,4 +33,9 @@ class App : Application() {
             }
         )
     }
+}
+
+class App : Application() {
+    private val job = Job()
+    val fsmNavScope = CoroutineScope(job + Dispatchers.Main)
 }
