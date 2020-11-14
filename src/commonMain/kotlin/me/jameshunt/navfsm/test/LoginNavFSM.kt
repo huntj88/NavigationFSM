@@ -2,11 +2,10 @@ package me.jameshunt.navfsm.test
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.selects.select
 import me.jameshunt.navfsm.FSM
 import me.jameshunt.navfsm.FSMResult
-import me.jameshunt.navfsm.PlatformUI
+import me.jameshunt.navfsm.UIProxy
 import me.jameshunt.navfsm.flow
 
 interface LoginNavFSM: FSM<Unit, Unit> {
@@ -51,14 +50,14 @@ interface LoginNavFSM: FSM<Unit, Unit> {
             }
         }
 
-        val backFlow = async {
-            delay(500)
-            FSMResult.Back
-        }
+//        val backFlow = async {
+//            delay(50000)
+//            FSMResult.Back
+//        }
 
         select<FSMResult<Unit>> {
             normalFlow.onAwait { it }
-            backFlow.onAwait { it }
+//            backFlow.onAwait { it }
         }
     }
 
@@ -82,12 +81,13 @@ class LoginNavFSMImpl: LoginNavFSM, FSM<Unit, Unit> {
 //            is FlowResult.Error -> TODO()
 //        }
 
-        delay(5000)
+//        delay(5000)
         val result = flow<Unit, LoginNavFSM.ProvidedCredentials>(
-            ui = LoginUI::class,
+            ui = LoginUIProxy::class,
             input = Unit
         )
 
+        println(result)
         TODO()
     }
 
@@ -108,7 +108,7 @@ class LoginNavFSMImpl: LoginNavFSM, FSM<Unit, Unit> {
     }
 }
 
-interface LoginUI: PlatformUI<Unit, LoginNavFSM.ProvidedCredentials> {
-    override val type: PlatformUI.Type
-        get() = PlatformUI.Type.Screen
+interface LoginUIProxy: UIProxy<Unit, LoginNavFSM.ProvidedCredentials> {
+    override val type: UIProxy.Type
+        get() = UIProxy.Type.Screen
 }

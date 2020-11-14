@@ -5,11 +5,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
-typealias UIRegistry = Map<KClass<PlatformUI<*, *>>, () -> PlatformUI<*, *>>
-fun <In, Out> UIRegistry.getUI(ui: KClass<*>): PlatformUI<In, Out> = ui
-    .let { it as? KClass<PlatformUI<*, *>> ?: error("KClass is not a FlowUI: $ui") }
+typealias UIRegistry = Map<KClass<UIProxy<*, *>>, () -> UIProxy<*, *>>
+fun <In, Out> UIRegistry.getUI(ui: KClass<*>): UIProxy<In, Out> = ui
+    .let { it as? KClass<UIProxy<*, *>> ?: error("KClass is not a FlowUI: $ui") }
     .let { this[it] ?: error("missing ui registration for $ui")}
-    .invoke() as PlatformUI<In, Out>
+    .invoke() as UIProxy<In, Out>
 
 object FSMManager {
     private var _root: FSMTreeNode? = null
