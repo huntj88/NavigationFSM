@@ -10,11 +10,6 @@ interface UIProxy<In, Out> {
     fun complete(data: Out)
     fun error(error: Throwable)
     fun back()
-
-    enum class Type {
-        Screen,
-        Dialog
-    }
 }
 
 interface PlatformDependencies

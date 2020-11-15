@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CompletableDeferred
 import me.jameshunt.navfsm.test.ErrorUIProxy
@@ -13,12 +14,34 @@ import java.lang.ref.WeakReference
 
 class ErrorDialog: NavFSMDialogFragment<String, Unit>() {
 
+    private var counter = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        counter = when(getAndConsumeInputData()) {
+            is AndroidUIInput.NewData -> 0
+            is AndroidUIInput.ResumeSavedState -> savedInstanceState
+                ?.getInt("counter")
+                ?.plus(1)
+                ?: 0
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("counter", counter)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return View(context).apply {
+        return TextView(context).apply {
+            textSize = 32f
+            text = counter.toString()
+            setPadding(150, 150, 150, 150)
             setBackgroundColor(Color.RED)
             setOnClickListener {
                 complete(Unit)
