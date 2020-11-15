@@ -56,6 +56,15 @@ interface LoginNavFSM : FSM<Unit, Unit> {
 
 }
 
+class BlahNavFSM : FSM<String, String> {
+    private val errorDialogProxy = FSMManager.proxy<ErrorUIProxy, String, Unit>()
+
+    override suspend fun run(input: String): FSMResult<String> {
+        flow(proxy = errorDialogProxy, input = input)
+        return FSMResult.Complete("complete")
+    }
+}
+
 class LoginNavFSMImpl : LoginNavFSM {
 
     private val loginUIProxy = FSMManager.proxy<LoginUIProxy, Unit, Credentials>()
@@ -76,10 +85,12 @@ class LoginNavFSMImpl : LoginNavFSM {
     }
 
     override suspend fun ShowError.handle(): StateAfterShowError {
-        return flow(proxy = errorDialogProxy, input = message).onResult(
-            onComplete = { toShowForm() },
-            onBack = { toShowForm() }
-        )
+        return flow(flow = BlahNavFSM(), input = "input")
+//        return flow(proxy = errorDialogProxy, input = message)
+            .onResult(
+                onComplete = { toShowForm() },
+                onBack = { toShowForm() }
+            )
     }
 }
 

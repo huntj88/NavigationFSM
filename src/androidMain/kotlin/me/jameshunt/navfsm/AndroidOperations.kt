@@ -3,15 +3,43 @@ package me.jameshunt.navfsm
 import androidx.fragment.app.FragmentManager
 import java.lang.ref.WeakReference
 
-class AndroidDependencies(val fragmentManager: FragmentManager) : PlatformDependencies
+class AndroidDependencies(val fragmentManager: FragmentManager) : PlatformDependencies {
 
-class AndroidOperations(
+    override fun resume() {
+
+    }
+
+    fun resumeFSM(navFSMTreeNode: FSMTreeNode) {
+        val recentFragmentProxy = navFSMTreeNode
+            .let { it.platformOperations as AndroidOperations }
+            .mostRecentFragmentProxy
+
+        val recentDialogProxy = navFSMTreeNode
+            .let { it.platformOperations as AndroidOperations }
+            .mostRecentDialogProxy
+
+        val currentFragment = fragmentManager
+            .fragments
+            .firstOrNull { it.tag == recentFragmentProxy?.tag }
+
+        val currentDialog = fragmentManager
+            .fragments
+            .firstOrNull { it.tag == recentDialogProxy?.tag }
+
+        currentFragment?.let { recentFragmentProxy?.bind(it as NavFSMFragment<*, *, *>) }
+        currentDialog?.let { recentDialogProxy?.bind(it as NavFSMDialogFragment<*, *, *>) }
+    }
+}
+
+data class AndroidOperations(
     private val viewId: Int,
     private val getFragmentManager: () -> FragmentManager
 ) : PlatformOperations {
 
     var mostRecentFragmentProxy: FragmentProxy? = null
     var mostRecentDialogProxy: DialogProxy? = null
+
+    override fun duplicate(): PlatformOperations = this.copy()
 
     override fun resume() {
         val fragmentManager = getFragmentManager()

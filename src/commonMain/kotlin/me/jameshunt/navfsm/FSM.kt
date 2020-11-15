@@ -28,11 +28,11 @@ suspend fun <In, Out> FSM<*, *>.flow(flow: FSM<In, Out>, input: In): FSMResult<O
     val newFlowNode = FSMTreeNode(
         flow = flow,
         children = mutableListOf(),
-        platformOperations = node.platformOperations // copy for now with no changes
+        platformOperations = node.platformOperations.duplicate() // copy for now with no changes
     )
     node.children.add(newFlowNode)
 
-    return flow.run(input)
+    return flow.run(input).also { node.children.remove(newFlowNode) }
 }
 
 suspend inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSM<*, *>.flow(

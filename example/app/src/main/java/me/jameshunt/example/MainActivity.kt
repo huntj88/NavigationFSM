@@ -19,19 +19,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         layoutInflater.inflate(R.layout.fullscreen_fragment_container, navFSMContainer, true)
+        val platformDependencies = AndroidDependencies(supportFragmentManager)
 
-        FSMManager.init(
-            platformDependencies = AndroidDependencies(supportFragmentManager),
-            scope = (application as App).fsmNavScope,
-            getInitialFlow = { LoginNavFSMImpl() },
-            uiRegistry = mapOf(
-                LoginUIProxy::class as KClass<UIProxy<*, *>> to { LoginUIProxyImpl() },
-                ErrorUIProxy::class as KClass<UIProxy<*, *>> to { ErrorUIProxyImpl() }
-            ),
-            platformOperations = AndroidOperations(R.id.fragment_container) {
-                (FSMManager.platformDependencies as AndroidDependencies).fragmentManager
-            }
-        )
+        when (FSMManager.isInitialized()) {
+            true -> FSMManager.resume(platformDependencies)
+            false -> FSMManager.init(
+                platformDependencies = platformDependencies,
+                platformOperations = AndroidOperations(R.id.fragment_container) {
+                    (FSMManager.platformDependencies as AndroidDependencies).fragmentManager
+                }
+            )
+        }
     }
 
     override fun onBackPressed() {
@@ -40,7 +38,25 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class App : Application() {
-    private val job = Job()
-    val fsmNavScope = CoroutineScope(job + Dispatchers.Main)
+class App : Application(), NavFSMConfig by NavFSMConfigImpl()
+
+interface NavFSMConfig {
+    val job: Job
+    val fsmNavScope: CoroutineScope
+}
+
+class NavFSMConfigImpl: NavFSMConfig {
+    override val job = Job()
+    override val fsmNavScope = CoroutineScope(job + Dispatchers.Main)
+
+    init {
+        FSMManager.config(
+            scope = fsmNavScope,
+            getInitialFlow = { LoginNavFSMImpl() },
+            uiRegistry = mapOf(
+                LoginUIProxy::class as KClass<UIProxy<*, *>> to { LoginUIProxyImpl() },
+                ErrorUIProxy::class as KClass<UIProxy<*, *>> to { ErrorUIProxyImpl() }
+            )
+        )
+    }
 }
