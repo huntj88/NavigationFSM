@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 
 inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSMManager.proxy(): Proxy {
     return Proxy::class
-        .let { it as? KClass<UIProxy<*, *>> ?: error("KClass is not a FlowUI: ${Proxy::class}") }
+        .let { it as KClass<UIProxy<*, *>> }
         .let { uiRegistry[it] ?: error("missing ui registration for ${Proxy::class}")}
         .invoke() as Proxy
 }
@@ -29,7 +29,7 @@ object FSMManager {
     fun init(
         scope: CoroutineScope,
         getInitialFlow: () -> FSM<Unit, Unit>,
-        uiRegistry: UIRegistry,
+        uiRegistry: UIRegistry, // generate UI registry bindings
         platformOperations: PlatformOperations,
         platformDependencies: PlatformDependencies
     ) {

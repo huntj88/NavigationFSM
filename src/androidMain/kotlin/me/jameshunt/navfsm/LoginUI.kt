@@ -12,7 +12,7 @@ import me.jameshunt.navfsm.test.LoginUIProxy
 import java.lang.ref.WeakReference
 import java.util.*
 
-class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.ProvidedCredentials>() {
+class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.Credentials>() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,7 +21,7 @@ class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.ProvidedCredentials>() {
     ): View = View(context).apply {
         setBackgroundColor(Color.BLUE)
         setOnClickListener {
-            val output = LoginNavFSM.ProvidedCredentials("wow", "wow")
+            val output = LoginNavFSM.Credentials("wow", "wow")
             complete(output)
         }
     }
@@ -31,7 +31,7 @@ class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.ProvidedCredentials>() {
 class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
     override val tag: String = UUID.randomUUID().toString()
 
-    override var completableDeferred: CompletableDeferred<FSMResult<LoginNavFSM.ProvidedCredentials>> =
+    override var completableDeferred: CompletableDeferred<FSMResult<LoginNavFSM.Credentials>> =
         CompletableDeferred(FSMResult.Back)
         get() {
             field = if (field.isActive) field else CompletableDeferred()
@@ -42,7 +42,7 @@ class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
     private var state: Fragment.SavedState? = null
     override var input: Unit? = Unit
 
-    override fun complete(data: LoginNavFSM.ProvidedCredentials) {
+    override fun complete(data: LoginNavFSM.Credentials) {
         saveState()
         completableDeferred.complete(FSMResult.Complete(data))
     }
