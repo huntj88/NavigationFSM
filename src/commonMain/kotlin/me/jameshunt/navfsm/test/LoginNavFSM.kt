@@ -23,13 +23,13 @@ interface LoginNavFSM : FSM<Unit, Unit> {
     }
 
     override suspend fun run(input: Unit): FSMResult<Unit> = try {
-        var nextState: StateAfter = onShowForm()
+        var nextState: StateAfter = ShowForm.handle()
         while (nextState !is Done && nextState !is Back) {
             val currentState = nextState
             nextState = when (currentState) {
-                is ShowForm -> onShowForm()
-                is AttemptLogin -> onAttemptLogin(currentState.credentials)
-                is ShowError -> onShowError(currentState.message)
+                is ShowForm -> currentState.handle()
+                is AttemptLogin -> currentState.handle()
+                is ShowError -> currentState.handle()
                 else -> throw IllegalStateException()
             }
         }
@@ -43,38 +43,39 @@ interface LoginNavFSM : FSM<Unit, Unit> {
         FSMResult.Error(t)
     }
 
-    suspend fun onShowForm(): StateAfterShowForm
-    suspend fun onAttemptLogin(credentials: Credentials): StateAfterAttemptLogin
-    suspend fun onShowError(message: String): StateAfterShowError
+    suspend fun ShowForm.handle(): StateAfterShowForm
+    suspend fun AttemptLogin.handle(): StateAfterAttemptLogin
+    suspend fun ShowError.handle(): StateAfterShowError
 
-    fun toShowForm() = ShowForm
-    fun toAttemptLogin(credentials: Credentials) = AttemptLogin(credentials)
-    fun toShowError(message: String) = ShowError(message)
-    fun toDone() = Done(Unit)
-    fun toBack() = Back
+    fun ShowError.toShowForm() = ShowForm
+    fun ShowForm.toAttemptLogin(credentials: Credentials) = AttemptLogin(credentials)
+
+    fun AttemptLogin.toShowError(message: String) = ShowError(message)
+    fun AttemptLogin.toDone() = Done(Unit)
+    fun ShowForm.toBack() = Back
 
 }
 
-class LoginNavFSMImpl : LoginNavFSM, FSM<Unit, Unit> {
+class LoginNavFSMImpl : LoginNavFSM {
 
     private val loginUIProxy = FSMManager.proxy<LoginUIProxy, Unit, Credentials>()
     private val errorDialogProxy = FSMManager.proxy<ErrorUIProxy, String, Unit>()
 
-    override suspend fun onShowForm(): StateAfterShowForm {
+    override suspend fun ShowForm.handle(): StateAfterShowForm {
         return flow(proxy = loginUIProxy, input = Unit).onResult(
             onComplete = { toAttemptLogin(it) },
             onBack = { toBack() }
         )
     }
 
-    override suspend fun onAttemptLogin(credentials: Credentials): StateAfterAttemptLogin {
+    override suspend fun AttemptLogin.handle(): StateAfterAttemptLogin {
         return when (credentials.username == "wow" && credentials.password == "not wow") {
             true -> toDone()
             false -> toShowError("invalid credentials")
         }
     }
 
-    override suspend fun onShowError(message: String): StateAfterShowError {
+    override suspend fun ShowError.handle(): StateAfterShowError {
         return flow(proxy = errorDialogProxy, input = message).onResult(
             onComplete = { toShowForm() },
             onBack = { toShowForm() }
