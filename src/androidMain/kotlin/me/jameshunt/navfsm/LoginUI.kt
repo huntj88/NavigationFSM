@@ -12,7 +12,7 @@ import me.jameshunt.navfsm.test.LoginUIProxy
 import java.lang.ref.WeakReference
 import java.util.*
 
-class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.Credentials>() {
+class LoginFragment : NavFSMFragment<LoginUIProxy, Unit, LoginNavFSM.Credentials>() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +38,7 @@ class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
             return field
         }
 
-    override var fragment: WeakReference<NavFSMFragment<*, *>>? = null
+    override var fragment: WeakReference<NavFSMFragment<*, *, *>>? = null
     private var state: Fragment.SavedState? = null
     override var input: Unit? = Unit
 
@@ -66,7 +66,7 @@ class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
         }
     }
 
-    private fun restoreState(fragment: NavFSMFragment<*, *>) {
+    private fun restoreState(fragment: NavFSMFragment<*, *, *>) {
         this.state?.let {
             // Can't set initial state if already added
             if (!fragment.isAdded) {
@@ -75,8 +75,8 @@ class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
         }
     }
 
-    override fun newFragmentInstance(): NavFSMFragment<*, *> = LoginFragment()
-    override fun bind(fragment: NavFSMFragment<*, *>) {
+    override fun newFragmentInstance(): NavFSMFragment<*, *, *> = LoginFragment()
+    override fun bind(fragment: NavFSMFragment<*, *, *>) {
         fragment as LoginFragment
         this.restoreState(fragment)
         this.fragment = WeakReference(fragment)

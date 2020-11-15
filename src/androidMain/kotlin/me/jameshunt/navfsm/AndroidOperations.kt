@@ -24,8 +24,8 @@ class AndroidOperations(
             .fragments
             .firstOrNull { it.tag == mostRecentDialogProxy?.tag }
 
-        currentFragment?.let { mostRecentFragmentProxy?.bind(it as NavFSMFragment<*, *>) }
-        currentDialog?.let { mostRecentDialogProxy?.bind(it as NavFSMDialogFragment<*, *>) }
+        currentFragment?.let { mostRecentFragmentProxy?.bind(it as NavFSMFragment<*, *, *>) }
+        currentDialog?.let { mostRecentDialogProxy?.bind(it as NavFSMDialogFragment<*, *, *>) }
     }
 
     fun back() {
@@ -48,7 +48,7 @@ class AndroidOperations(
         return deferred.await() as FSMResult<Out>
     }
 
-    private fun showFragment(proxy: FragmentProxy): NavFSMFragment<*, *> {
+    private fun showFragment(proxy: FragmentProxy): NavFSMFragment<*, *, *> {
         mostRecentFragmentProxy = proxy
         mostRecentDialogProxy = null
         val fragment = proxy.fragmentOrNew()
@@ -61,7 +61,7 @@ class AndroidOperations(
         return fragment
     }
 
-    private fun showDialog(proxy: DialogProxy): NavFSMDialogFragment<*, *> {
+    private fun showDialog(proxy: DialogProxy): NavFSMDialogFragment<*, *, *> {
         mostRecentDialogProxy = proxy
         val dialog = proxy.dialogOrNew()
         proxy.bind(dialog)
@@ -72,17 +72,16 @@ class AndroidOperations(
 
 interface FragmentProxy {
     val tag: String
-    val fragment: WeakReference<NavFSMFragment<*, *>>?
-    fun newFragmentInstance(): NavFSMFragment<*, *>
-    fun bind(fragment: NavFSMFragment<*, *>)
+    val fragment: WeakReference<NavFSMFragment<*, *, *>>?
+    fun newFragmentInstance(): NavFSMFragment<*, *, *>
+    fun bind(fragment: NavFSMFragment<*, *, *>)
 }
-
-fun FragmentProxy.fragmentOrNew(): NavFSMFragment<*, *> = fragment?.get() ?: newFragmentInstance()
-fun DialogProxy.dialogOrNew(): NavFSMDialogFragment<*, *> = dialog?.get() ?: newDialogInstance()
+fun FragmentProxy.fragmentOrNew(): NavFSMFragment<*, *, *> = fragment?.get() ?: newFragmentInstance()
 
 interface DialogProxy {
     val tag: String
-    val dialog: WeakReference<NavFSMDialogFragment<*, *>>?
-    fun newDialogInstance(): NavFSMDialogFragment<*, *>
-    fun bind(dialog: NavFSMDialogFragment<*, *>)
+    val dialog: WeakReference<NavFSMDialogFragment<*, *, *>>?
+    fun newDialogInstance(): NavFSMDialogFragment<*, *, *>
+    fun bind(dialog: NavFSMDialogFragment<*, *, *>)
 }
+fun DialogProxy.dialogOrNew(): NavFSMDialogFragment<*, *, *> = dialog?.get() ?: newDialogInstance()

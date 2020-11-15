@@ -12,7 +12,7 @@ import me.jameshunt.navfsm.test.ErrorUIProxy
 import java.lang.ref.WeakReference
 
 
-class ErrorDialog: NavFSMDialogFragment<String, Unit>() {
+class ErrorDialog: NavFSMDialogFragment<ErrorUIProxy, String, Unit>() {
 
     private var counter = 0
 
@@ -60,7 +60,7 @@ class ErrorUIProxyImpl : ErrorUIProxy, DialogProxy {
             return field
         }
 
-    override var dialog: WeakReference<NavFSMDialogFragment<*, *>>? = null
+    override var dialog: WeakReference<NavFSMDialogFragment<*, *, *>>? = null
     private var state: Fragment.SavedState? = null
     override var input: String? = null
 
@@ -88,7 +88,7 @@ class ErrorUIProxyImpl : ErrorUIProxy, DialogProxy {
         }
     }
 
-    private fun restoreState(dialog: NavFSMDialogFragment<*, *>) {
+    private fun restoreState(dialog: NavFSMDialogFragment<*, *, *>) {
         this.state?.let {
             // Can't set initial state if already added
             if (!dialog.isAdded) {
@@ -97,8 +97,8 @@ class ErrorUIProxyImpl : ErrorUIProxy, DialogProxy {
         }
     }
 
-    override fun newDialogInstance(): NavFSMDialogFragment<*, *> = ErrorDialog()
-    override fun bind(dialog: NavFSMDialogFragment<*, *>) {
+    override fun newDialogInstance(): NavFSMDialogFragment<*, *, *> = ErrorDialog()
+    override fun bind(dialog: NavFSMDialogFragment<*, *, *>) {
         dialog as ErrorDialog
         this.restoreState(dialog)
         this.dialog = WeakReference(dialog)

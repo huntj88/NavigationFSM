@@ -12,8 +12,10 @@ sealed class AndroidUIInput<out Input> {
     object ResumeSavedState: AndroidUIInput<Nothing>()
 }
 
-abstract class NavFSMFragment<Input, Output> : Fragment() {
-    var proxy: UIProxy<Input, Output>? = null
+// Could just be input and output, but by putting a third
+// 'Proxy' generic type I can use that as input in code generation
+abstract class NavFSMFragment<Proxy: UIProxy<Input, Output>, Input, Output> : Fragment() {
+    var proxy: Proxy? = null
 
     private var newInput = false
 
@@ -38,8 +40,10 @@ abstract class NavFSMFragment<Input, Output> : Fragment() {
     }
 }
 
-abstract class NavFSMDialogFragment<Input, Output> : DialogFragment() {
-    var proxy: UIProxy<Input, Output>? = null
+// Could just be input and output, but by putting a third
+// 'Proxy' generic type I can use that as input in code generation
+abstract class NavFSMDialogFragment<Proxy: UIProxy<Input, Output>, Input, Output> : DialogFragment() {
+    var proxy: Proxy? = null
 
     private var newInput = false
 
