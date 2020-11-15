@@ -10,24 +10,32 @@ class AndroidOperations(
     private val getFragmentManager: () -> FragmentManager
 ) : PlatformOperations {
 
-    var currentlyVisibleFragmentProxy: FragmentProxy? = null
-    var currentlyVisibleDialogProxy: DialogProxy? = null
+    var mostRecentFragmentProxy: FragmentProxy? = null
+    var mostRecentDialogProxy: DialogProxy? = null
 
     override fun resume() {
         val fragmentManager = getFragmentManager()
-        if (fragmentManager.fragments.size > 0) {
-            fragmentManager
-                .beginTransaction()
-                .also { transaction ->
-                    fragmentManager.fragments.forEach {
-                        transaction.remove(it)
-                    }
-                }
-                .commitNowAllowingStateLoss()
-        }
 
-        currentlyVisibleFragmentProxy?.let { showFragment(it) }
-        currentlyVisibleDialogProxy?.let { showDialog(it) }
+        val currentFragment = fragmentManager
+            .fragments
+            .firstOrNull { it.tag == mostRecentFragmentProxy?.tag }
+
+        val currentDialog = fragmentManager
+            .fragments
+            .firstOrNull { it.tag == mostRecentDialogProxy?.tag }
+
+        currentFragment?.let { mostRecentFragmentProxy?.bind(it as NavFSMFragment<*, *>) }
+        currentDialog?.let { mostRecentDialogProxy?.bind(it as NavFSMDialogFragment<*, *>) }
+    }
+
+    fun back() {
+        mostRecentDialogProxy
+            ?.let { it as UIProxy<*, *> }?.let {
+                mostRecentDialogProxy?.dialog?.get()?.dismiss()
+                it.back()
+            }
+            ?: mostRecentFragmentProxy?.let { it as UIProxy<*, *> }?.back()
+            ?: throw IllegalStateException()
     }
 
     override suspend fun <In, Out> showUI(proxy: UIProxy<In, Out>, input: In): FSMResult<Out> {
@@ -41,27 +49,29 @@ class AndroidOperations(
     }
 
     private fun showFragment(proxy: FragmentProxy): NavFSMFragment<*, *> {
-        currentlyVisibleFragmentProxy = proxy
+        mostRecentFragmentProxy = proxy
+        mostRecentDialogProxy = null
         val fragment = proxy.fragmentOrNew()
         proxy.bind(fragment)
         getFragmentManager()
             .beginTransaction()
-            .replace(viewId, fragment)
+            .replace(viewId, fragment, proxy.tag)
             .commit()
 
         return fragment
     }
 
     private fun showDialog(proxy: DialogProxy): NavFSMDialogFragment<*, *> {
-        currentlyVisibleDialogProxy = proxy
+        mostRecentDialogProxy = proxy
         val dialog = proxy.dialogOrNew()
         proxy.bind(dialog)
-        dialog.show(getFragmentManager(), null)
+        dialog.show(getFragmentManager(), proxy.tag)
         return dialog
     }
 }
 
 interface FragmentProxy {
+    val tag: String
     val fragment: WeakReference<NavFSMFragment<*, *>>?
     fun newFragmentInstance(): NavFSMFragment<*, *>
     fun bind(fragment: NavFSMFragment<*, *>)
@@ -71,6 +81,7 @@ fun FragmentProxy.fragmentOrNew(): NavFSMFragment<*, *> = fragment?.get() ?: new
 fun DialogProxy.dialogOrNew(): NavFSMDialogFragment<*, *> = dialog?.get() ?: newDialogInstance()
 
 interface DialogProxy {
+    val tag: String
     val dialog: WeakReference<NavFSMDialogFragment<*, *>>?
     fun newDialogInstance(): NavFSMDialogFragment<*, *>
     fun bind(dialog: NavFSMDialogFragment<*, *>)

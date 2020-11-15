@@ -30,7 +30,7 @@ interface LoginNavFSM: FSM<Unit, Unit> {
         val normalFlow = async {
             try {
                 var nextState: StateAfter = onShowForm()
-                while (nextState !is Done) {
+                while (nextState !is Done && nextState !is Back) {
                     val currentState = nextState
                     nextState = when (currentState) {
                         is ShowForm -> onShowForm()
@@ -40,7 +40,11 @@ interface LoginNavFSM: FSM<Unit, Unit> {
                     }
                 }
 
-                FSMResult.Complete(nextState.output)
+                when (nextState) {
+                    is Done -> FSMResult.Complete(nextState.output)
+                    is Back -> FSMResult.Back
+                    else -> throw IllegalStateException()
+                }
             } catch (t: Throwable) {
                 FSMResult.Error(t)
             }
@@ -76,7 +80,8 @@ class LoginNavFSMImpl: LoginNavFSM, FSM<Unit, Unit> {
 
     override suspend fun onShowForm(): StateAfterShowForm {
         return flow(proxy = loginUIProxy, input = Unit).onResult(
-            onComplete = { AttemptLogin(it) }
+            onComplete = { AttemptLogin(it) },
+            onBack = { toBack() }
         )
     }
 

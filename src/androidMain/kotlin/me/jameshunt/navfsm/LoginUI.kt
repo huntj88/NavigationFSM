@@ -10,6 +10,7 @@ import kotlinx.coroutines.CompletableDeferred
 import me.jameshunt.navfsm.test.LoginNavFSM
 import me.jameshunt.navfsm.test.LoginUIProxy
 import java.lang.ref.WeakReference
+import java.util.*
 
 class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.ProvidedCredentials>() {
 
@@ -28,6 +29,7 @@ class LoginFragment : NavFSMFragment<Unit, LoginNavFSM.ProvidedCredentials>() {
 
 // generated
 class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
+    override val tag: String = UUID.randomUUID().toString()
 
     override var completableDeferred: CompletableDeferred<FSMResult<LoginNavFSM.ProvidedCredentials>> =
         CompletableDeferred(FSMResult.Back)

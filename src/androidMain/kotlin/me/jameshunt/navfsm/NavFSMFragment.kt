@@ -1,6 +1,8 @@
 package me.jameshunt.navfsm
 
+import android.app.Dialog
 import android.content.DialogInterface
+import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.Deferred
@@ -41,6 +43,14 @@ abstract class NavFSMDialogFragment<Input, Output> : DialogFragment() {
 
     private var newInput = false
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return object : Dialog(requireActivity(), theme) {
+            override fun onBackPressed() {
+                activity?.onBackPressed()
+            }
+        }
+    }
+
     fun flowForResultAsync(): Deferred<FSMResult<Output>> {
         newInput = true
         return proxy!!.completableDeferred
@@ -63,13 +73,8 @@ abstract class NavFSMDialogFragment<Input, Output> : DialogFragment() {
         dismiss()
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-
-        // DialogFragments are kept around in FragmentManager memory longer,
-        // don't let it resolve if fragment is from old activity
-        if((proxy as? DialogProxy)?.dialog?.get() == this) {
-            proxy?.back()
-        }
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        proxy!!.back()
     }
 }

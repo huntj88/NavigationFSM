@@ -17,13 +17,19 @@ class ErrorDialog: NavFSMDialogFragment<String, Unit>() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return View(context).apply { setBackgroundColor(Color.RED) }
+    ): View {
+        return View(context).apply {
+            setBackgroundColor(Color.RED)
+            setOnClickListener {
+                complete(Unit)
+            }
+        }
     }
 }
 
 // generated
 class ErrorUIProxyImpl : ErrorUIProxy, DialogProxy {
+    override val tag: String = java.util.UUID.randomUUID().toString()
 
     override var completableDeferred: CompletableDeferred<FSMResult<Unit>> = CompletableDeferred(FSMResult.Back)
         get() {
