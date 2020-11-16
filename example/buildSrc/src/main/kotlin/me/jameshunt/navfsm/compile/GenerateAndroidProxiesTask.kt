@@ -4,6 +4,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.intellij.lang.annotations.Language
 import java.io.File
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 open class GenerateAndroidProxiesTask : DefaultTask() {
@@ -61,77 +62,19 @@ open class GenerateAndroidProxiesTask : DefaultTask() {
     }
 
     private fun generateProxy(info: InfoForUIProxy) {
-        
-        val fragmentOrDialogCode = when (info.uiType) {
-            InfoForUIProxy.UIType.Fragment -> """
-                override var fragment: WeakReference<NavFSMFragment<*, *, *>>? = null
-                override fun newFragmentInstance(): NavFSMFragment<*, *, *> = ${info.uiClassName}()
-                override fun bind(fragment: NavFSMFragment<*, *, *>) {
-                    fragment as ${info.uiClassName}
-                    this.restoreState(fragment)
-                    this.fragment = WeakReference(fragment)
-                    fragment.proxy = this
-                }
-                
-                internal fun saveState() {
-                    this.fragment?.get()?.let {
-                        // We can't save the state of a Fragment that isn't added to a FragmentManager.
-                        if (it.isAdded) {
-                            this.state = it.fragmentManager?.saveFragmentInstanceState(it)
-                        }
-                    }
-                }
-                
-                private fun restoreState(fragment: NavFSMFragment<*, *, *>) {
-                    this.state?.let {
-                        // Can't set initial state if already added
-                        if (!fragment.isAdded) {
-                            fragment.setInitialSavedState(this.state)
-                        }
-                    }
-                }
-            """
-            InfoForUIProxy.UIType.Dialog -> """
-                override var dialog: WeakReference<NavFSMDialogFragment<*, *, *>>? = null
-                override fun newDialogInstance(): NavFSMDialogFragment<*, *, *> = ${info.uiClassName}()
-                override fun bind(dialog: NavFSMDialogFragment<*, *, *>) {
-                    dialog as ${info.uiClassName}
-                    this.restoreState(dialog)
-                    this.dialog = WeakReference(dialog)
-                    dialog.proxy = this
-                }
-                
-                internal fun saveState() {
-                    this.dialog?.get()?.let {
-                        // We can't save the state of a Fragment that isn't added to a FragmentManager.
-                        if (it.isAdded) {
-                            this.state = it.fragmentManager?.saveFragmentInstanceState(it)
-                        }
-                    }
-                }
-            
-                private fun restoreState(dialog: NavFSMDialogFragment<*, *, *>) {
-                    this.state?.let {
-                        // Can't set initial state if already added
-                        if (!dialog.isAdded) {
-                            dialog.setInitialSavedState(this.state)
-                        }
-                    }
-                }
-            """
+
+        val uiTypeName = info.uiType.name.toLowerCase(Locale.ROOT)
+        val fragOrDialogTypeName = when (info.uiType) {
+            InfoForUIProxy.UIType.Fragment -> "NavFSMFragment<*, *, *>"
+            InfoForUIProxy.UIType.Dialog -> "NavFSMDialogFragment<*, *, *>"
         }
-        
         
         @Language("kotlin")
         val blah = """
             import ${info.importUI}
             import androidx.fragment.app.Fragment
             import kotlinx.coroutines.CompletableDeferred
-            import me.jameshunt.navfsm.DialogProxy
-            import me.jameshunt.navfsm.FSMResult
-            import me.jameshunt.navfsm.NavFSMDialogFragment
-            import me.jameshunt.navfsm.NavFSMFragment
-            import me.jameshunt.navfsm.test.ErrorUIProxy
+            import me.jameshunt.navfsm.*
             import java.lang.ref.WeakReference
             import java.util.UUID
             
@@ -163,7 +106,32 @@ open class GenerateAndroidProxiesTask : DefaultTask() {
                     completableDeferred.complete(FSMResult.Error(error))
                 }
 
-                $fragmentOrDialogCode
+                override var $uiTypeName: WeakReference<$fragOrDialogTypeName>? = null
+                override fun new${info.uiType.name}Instance(): $fragOrDialogTypeName = ${info.uiClassName}()
+                override fun bind($uiTypeName: $fragOrDialogTypeName) {
+                    $uiTypeName as ${info.uiClassName}
+                    this.restoreState($uiTypeName)
+                    this.$uiTypeName = WeakReference($uiTypeName)
+                    $uiTypeName.proxy = this
+                }
+                
+                internal fun saveState() {
+                    this.$uiTypeName?.get()?.let {
+                        // We can't save the state of a Fragment that isn't added to a FragmentManager.
+                        if (it.isAdded) {
+                            this.state = it.fragmentManager?.saveFragmentInstanceState(it)
+                        }
+                    }
+                }
+                
+                private fun restoreState($uiTypeName: $fragOrDialogTypeName) {
+                    this.state?.let {
+                        // Can't set initial state if already added
+                        if (!$uiTypeName.isAdded) {
+                            $uiTypeName.setInitialSavedState(this.state)
+                        }
+                    }
+                }
             }
         """.trimIndent()
 
