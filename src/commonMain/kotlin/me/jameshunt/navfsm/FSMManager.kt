@@ -52,6 +52,7 @@ object FSMManager {
     fun isInitialized(): Boolean = _root != null
 
     fun init(platformOperations: PlatformOperations, platformDependencies: PlatformDependencies) {
+        check(!isInitialized()) { "Already initialized" }
         _platformDependencies = platformDependencies
         scope.launch {
             _uiRegistry = uiRegistry
@@ -71,4 +72,3 @@ object FSMManager {
         }
     }
 }
-

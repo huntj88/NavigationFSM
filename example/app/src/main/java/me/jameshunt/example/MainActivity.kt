@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        (FSMManager.root.platformOperations as AndroidOperations).back()
+        FSMManager.root.platformOperations.android().back()
 //        super.onBackPressed()
     }
 }

@@ -6,31 +6,30 @@ import java.lang.ref.WeakReference
 class AndroidDependencies(val fragmentManager: FragmentManager) : PlatformDependencies {
 
     override fun resume() {
-
+        FSMManager.root.walkTreeForResume()
     }
 
-    fun resumeFSM(navFSMTreeNode: FSMTreeNode) {
-        val recentFragmentProxy = navFSMTreeNode
-            .let { it.platformOperations as AndroidOperations }
-            .mostRecentFragmentProxy
+    // recursive, returns true for handled (bind()), false if parent FSM needs to bind() as well
+    // TODO: only handles 1 child right now
+    private fun FSMTreeNode.walkTreeForResume(): Boolean {
+        this.children.firstOrNull()?.let {
+            if (!it.walkTreeForResume()) {
+                it.platformOperations.android().resume()
+            }
+            return true
+        }
 
-        val recentDialogProxy = navFSMTreeNode
-            .let { it.platformOperations as AndroidOperations }
-            .mostRecentDialogProxy
-
-        val currentFragment = fragmentManager
-            .fragments
-            .firstOrNull { it.tag == recentFragmentProxy?.tag }
-
-        val currentDialog = fragmentManager
-            .fragments
-            .firstOrNull { it.tag == recentDialogProxy?.tag }
-
-        currentFragment?.let { recentFragmentProxy?.bind(it as NavFSMFragment<*, *, *>) }
-        currentDialog?.let { recentDialogProxy?.bind(it as NavFSMDialogFragment<*, *, *>) }
+        return when (this == FSMManager.root) {
+            true -> {
+                this.platformOperations.android().resume()
+                true
+            }
+            false -> false
+        }
     }
 }
 
+fun PlatformOperations.android(): AndroidOperations = this as AndroidOperations
 data class AndroidOperations(
     private val viewId: Int,
     private val getFragmentManager: () -> FragmentManager
@@ -41,7 +40,7 @@ data class AndroidOperations(
 
     override fun duplicate(): PlatformOperations = this.copy()
 
-    override fun resume() {
+    fun resume() {
         val fragmentManager = getFragmentManager()
 
         val currentFragment = fragmentManager
