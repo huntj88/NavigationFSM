@@ -13,10 +13,10 @@ interface UIProxy<In, Out> {
 }
 
 interface PlatformDependencies {
-    fun resume()
+    fun flowEnd()
 }
 
-interface PlatformOperations {
+interface PlatformFSMOperations {
     suspend fun <In, Out> showUI(proxy: UIProxy<In, Out>, input: In): FSMResult<Out>
-    fun duplicate(): PlatformOperations
+    fun duplicate(): PlatformFSMOperations
 }

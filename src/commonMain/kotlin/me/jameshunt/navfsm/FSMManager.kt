@@ -22,9 +22,7 @@ object FSMManager {
     val uiRegistry: UIRegistry
         get() = _uiRegistry ?: throw IllegalStateException()
 
-    private var _platformDependencies: PlatformDependencies? = null
-    val platformDependencies: PlatformDependencies
-        get() = _platformDependencies ?: throw IllegalStateException()
+    var platformDependencies: PlatformDependencies? = null
 
     private var _initialFlow: (() -> FSM<Unit, Unit>)? = null
     val initialFlow: () -> FSM<Unit, Unit>
@@ -33,11 +31,6 @@ object FSMManager {
     private var _scope: CoroutineScope? = null
     val scope: CoroutineScope
         get() = _scope ?: throw IllegalStateException()
-
-    fun resume(platformDependencies: PlatformDependencies) {
-        _platformDependencies = platformDependencies
-        platformDependencies.resume()
-    }
 
     fun config(
         scope: CoroutineScope,
@@ -51,24 +44,26 @@ object FSMManager {
 
     fun isInitialized(): Boolean = _root != null
 
-    fun init(platformOperations: PlatformOperations, platformDependencies: PlatformDependencies) {
+    fun init(fsmOperations: PlatformFSMOperations, platformDependencies: PlatformDependencies) {
         check(!isInitialized()) { "Already initialized" }
-        _platformDependencies = platformDependencies
+        this.platformDependencies = platformDependencies
         scope.launch {
             _uiRegistry = uiRegistry
             _root = FSMTreeNode(
                 flow = initialFlow(),
                 children = mutableListOf(),
-                platformOperations = platformOperations
+                platformFSMOperations = fsmOperations
             )
 
-            (root.flow as FSM<Unit, Unit>).run(Unit).let {
-                when (it) {
-                    is FSMResult.Complete -> TODO()
-                    is FSMResult.Error -> throw it.error
-                    is FSMResult.Back -> TODO()
+            (root.flow as FSM<Unit, Unit>)
+                .run(Unit)
+                .let {
+                    when (it) {
+                        is FSMResult.Complete, is FSMResult.Back -> platformDependencies.flowEnd()
+                        is FSMResult.Error -> throw it.error
+                    }
                 }
-            }
+                .also { _root = null }
         }
     }
 }

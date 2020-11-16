@@ -3,25 +3,35 @@ package me.jameshunt.navfsm
 import androidx.fragment.app.FragmentManager
 import java.lang.ref.WeakReference
 
-class AndroidDependencies(val fragmentManager: FragmentManager) : PlatformDependencies {
+class AndroidDependencies(
+    val fragmentManager: FragmentManager,
+    private val flowFinished: () -> Unit
+) : PlatformDependencies {
 
-    override fun resume() {
-        FSMManager.root.walkTreeForResume()
+    fun resume() {
+        FSMManager.root.walkTreeForOperation { it.resume() }
     }
 
-    // recursive, returns true for handled (bind()), false if parent FSM needs to bind() as well
+    fun back() {
+        FSMManager.root.walkTreeForOperation { it.back() }
+    }
+
+    override fun flowEnd() {
+        flowFinished()
+    }
+
     // TODO: only handles 1 child right now
-    private fun FSMTreeNode.walkTreeForResume(): Boolean {
+    private fun FSMTreeNode.walkTreeForOperation(operation: (AndroidFSMOperations) -> Unit): Boolean {
         this.children.firstOrNull()?.let {
-            if (!it.walkTreeForResume()) {
-                it.platformOperations.android().resume()
+            if (!it.walkTreeForOperation(operation)) {
+                operation(it.platformFSMOperations.android())
             }
             return true
         }
 
         return when (this == FSMManager.root) {
             true -> {
-                this.platformOperations.android().resume()
+                operation(this.platformFSMOperations.android())
                 true
             }
             false -> false
@@ -29,20 +39,18 @@ class AndroidDependencies(val fragmentManager: FragmentManager) : PlatformDepend
     }
 }
 
-fun PlatformOperations.android(): AndroidOperations = this as AndroidOperations
-data class AndroidOperations(
-    private val viewId: Int,
-    private val getFragmentManager: () -> FragmentManager
-) : PlatformOperations {
+fun PlatformFSMOperations.android(): AndroidFSMOperations = this as AndroidFSMOperations
+data class AndroidFSMOperations(private val viewId: Int) : PlatformFSMOperations {
 
     var mostRecentFragmentProxy: FragmentProxy? = null
     var mostRecentDialogProxy: DialogProxy? = null
 
-    override fun duplicate(): PlatformOperations = this.copy()
+    private val fragmentManager: FragmentManager
+        get() = (FSMManager.platformDependencies as AndroidDependencies).fragmentManager
+
+    override fun duplicate(): PlatformFSMOperations = this.copy()
 
     fun resume() {
-        val fragmentManager = getFragmentManager()
-
         val currentFragment = fragmentManager
             .fragments
             .firstOrNull { it.tag == mostRecentFragmentProxy?.tag }
@@ -80,7 +88,7 @@ data class AndroidOperations(
         mostRecentDialogProxy = null
         val fragment = proxy.fragmentOrNew()
         proxy.bind(fragment)
-        getFragmentManager()
+        fragmentManager
             .beginTransaction()
             .replace(viewId, fragment, proxy.tag)
             .commit()
@@ -92,7 +100,7 @@ data class AndroidOperations(
         mostRecentDialogProxy = proxy
         val dialog = proxy.dialogOrNew()
         proxy.bind(dialog)
-        dialog.show(getFragmentManager(), proxy.tag)
+        dialog.show(fragmentManager, proxy.tag)
         return dialog
     }
 }

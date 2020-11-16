@@ -17,24 +17,27 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         layoutInflater.inflate(R.layout.fullscreen_fragment_container, navFSMContainer, true)
-        val platformDependencies = AndroidDependencies(supportFragmentManager)
+
+        val platformDependencies = AndroidDependencies(
+            fragmentManager = supportFragmentManager,
+            flowFinished = { super.onBackPressed() }
+        )
 
         when (FSMManager.isInitialized()) {
-            true -> FSMManager.resume(platformDependencies)
+            true -> {
+                FSMManager.platformDependencies = platformDependencies
+                platformDependencies.resume()
+            }
             false -> FSMManager.init(
                 platformDependencies = platformDependencies,
-                platformOperations = AndroidOperations(R.id.fragment_container) {
-                    (FSMManager.platformDependencies as AndroidDependencies).fragmentManager
-                }
+                fsmOperations = AndroidFSMOperations(R.id.fragment_container)
             )
         }
     }
 
     override fun onBackPressed() {
-        FSMManager.root.platformOperations.android().back()
-//        super.onBackPressed()
+        (FSMManager.platformDependencies as AndroidDependencies).back()
     }
 }
 

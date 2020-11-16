@@ -28,7 +28,7 @@ suspend fun <In, Out> FSM<*, *>.flow(flow: FSM<In, Out>, input: In): FSMResult<O
     val newFlowNode = FSMTreeNode(
         flow = flow,
         children = mutableListOf(),
-        platformOperations = node.platformOperations.duplicate() // copy for now with no changes
+        platformFSMOperations = node.platformFSMOperations.duplicate() // copy for now with no changes
     )
     node.children.add(newFlowNode)
 
@@ -40,13 +40,13 @@ suspend inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSM<*, *>.flow(
     input: In
 ): FSMResult<Out> {
     val node = FSMManager.root.getNodeFor(this) ?: throw IllegalStateException()
-    return node.platformOperations.showUI(proxy, input)
+    return node.platformFSMOperations.showUI(proxy, input)
 }
 
 data class FSMTreeNode(
     val flow: FSM<*, *>,
     val children: MutableList<FSMTreeNode>,
-    val platformOperations: PlatformOperations
+    val platformFSMOperations: PlatformFSMOperations
 ) {
     fun getNodeFor(flow: FSM<*, *>): FSMTreeNode? {
         return when (this.flow == flow) {
