@@ -1,3 +1,5 @@
+import me.jameshunt.navfsm.compile.GenerateAndroidProxiesTask
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -32,6 +34,8 @@ android {
         jvmTarget = '1.8'
     }
 }
+
+task generateProxies(type: GenerateAndroidProxiesTask)
 
 dependencies {
 

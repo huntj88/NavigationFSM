@@ -1,4 +1,4 @@
-package me.jameshunt.navfsm
+package me.jameshunt.example
 
 import android.graphics.Color
 import android.os.Bundle
@@ -8,6 +8,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CompletableDeferred
+import me.jameshunt.navfsm.AndroidUIInput
+import me.jameshunt.navfsm.DialogProxy
+import me.jameshunt.navfsm.FSMResult
+import me.jameshunt.navfsm.NavFSMDialogFragment
 import me.jameshunt.navfsm.test.ErrorUIProxy
 import java.lang.ref.WeakReference
 
