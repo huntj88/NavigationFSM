@@ -24,6 +24,7 @@ dependencies {
 }
 
 tasks.register<me.jameshunt.navfsm.compile.GenerateAndroidProxiesTask>("generateProxies")
+tasks.getByName("preBuild").dependsOn(tasks.getByName("generateProxies"))
 
 android {
     compileSdkVersion(29)
