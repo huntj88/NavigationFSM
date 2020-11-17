@@ -54,5 +54,22 @@ data class FSMTreeNode(
             false -> children.asSequence().mapNotNull { it.getNodeFor(flow) }.first()
         }
     }
+
+    fun walkTreeForOperation(operation: (PlatformFSMOperations) -> Unit): Boolean {
+        this.children.firstOrNull()?.let {
+            if (!it.walkTreeForOperation(operation)) {
+                operation(it.platformFSMOperations)
+            }
+            return true
+        }
+
+        return when (this == FSMManager.root) {
+            true -> {
+                operation(this.platformFSMOperations)
+                true
+            }
+            false -> false
+        }
+    }
 }
 

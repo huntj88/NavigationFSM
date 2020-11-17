@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0E8DB0512563753A00D8A13A /* TestOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DB0502563753A00D8A13A /* TestOperations.swift */; };
 		0E8DB0532563852A00D8A13A /* NavFSMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DB0522563852A00D8A13A /* NavFSMViewController.swift */; };
+		0E8DB05525639A9600D8A13A /* LoginUIProxyImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DB05425639A9600D8A13A /* LoginUIProxyImpl.swift */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF81242A565900829871 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* SceneDelegate.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
@@ -55,6 +56,7 @@
 /* Begin PBXFileReference section */
 		0E8DB0502563753A00D8A13A /* TestOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestOperations.swift; sourceTree = "<group>"; };
 		0E8DB0522563852A00D8A13A /* NavFSMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavFSMViewController.swift; sourceTree = "<group>"; };
+		0E8DB05425639A9600D8A13A /* LoginUIProxyImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUIProxyImpl.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7555FF80242A565900829871 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				7555FF8C242A565B00829871 /* Info.plist */,
 				7555FF86242A565B00829871 /* Preview Content */,
 				0E8DB0502563753A00D8A13A /* TestOperations.swift */,
+				0E8DB05425639A9600D8A13A /* LoginUIProxyImpl.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E8DB05525639A9600D8A13A /* LoginUIProxyImpl.swift in Sources */,
 				0E8DB0532563852A00D8A13A /* NavFSMViewController.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,

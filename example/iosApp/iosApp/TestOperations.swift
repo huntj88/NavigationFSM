@@ -33,4 +33,9 @@ class SwiftPlatformDependencies: NFSMPlatformDependencies {
 func test() {
     let blah = NFSMIosFSMOperations(exposed: SwiftFSMPlatformOperations())
     NFSMFSMManager.init().doInit(fsmOperations: blah, platformDependencies: SwiftPlatformDependencies())
+    
+    
+    NFSMFSMManager.init().root.walkTreeForOperation(operation: { operations in
+        print((operations as! NFSMIosFSMOperations).description)
+    })
 }

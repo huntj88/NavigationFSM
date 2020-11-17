@@ -9,33 +9,15 @@ class AndroidDependencies(
 ) : PlatformDependencies {
 
     fun resume() {
-        FSMManager.root.walkTreeForOperation { it.resume() }
+        FSMManager.root.walkTreeForOperation { it.android().resume() }
     }
 
     fun back() {
-        FSMManager.root.walkTreeForOperation { it.back() }
+        FSMManager.root.walkTreeForOperation { it.android().back() }
     }
 
     override fun flowEnd() {
         flowFinished()
-    }
-
-    // TODO: only handles 1 child right now
-    private fun FSMTreeNode.walkTreeForOperation(operation: (AndroidFSMOperations) -> Unit): Boolean {
-        this.children.firstOrNull()?.let {
-            if (!it.walkTreeForOperation(operation)) {
-                operation(it.platformFSMOperations.android())
-            }
-            return true
-        }
-
-        return when (this == FSMManager.root) {
-            true -> {
-                operation(this.platformFSMOperations.android())
-                true
-            }
-            false -> false
-        }
     }
 }
 

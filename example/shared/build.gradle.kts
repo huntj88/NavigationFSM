@@ -27,6 +27,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":NavigationFSM"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
             }
         }
         val commonTest by getting {
