@@ -1,8 +1,8 @@
-package me.jameshunt.navfsm.test
+package me.jameshunt.example
 
 import me.jameshunt.navfsm.*
-import me.jameshunt.navfsm.test.LoginNavFSM.*
-import me.jameshunt.navfsm.test.LoginNavFSM.LoginFlowState.*
+import me.jameshunt.example.LoginNavFSM.*
+import me.jameshunt.example.LoginNavFSM.LoginFlowState.*
 
 // generated
 interface LoginNavFSM : FSM<Unit, Unit> {

@@ -8,9 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import me.jameshunt.navfsm.*
-import me.jameshunt.navfsm.test.ErrorUIProxy
-import me.jameshunt.navfsm.test.LoginNavFSMImpl
-import me.jameshunt.navfsm.test.LoginUIProxy
 import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {

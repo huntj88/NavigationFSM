@@ -10,8 +10,6 @@ import kotlinx.coroutines.CompletableDeferred
 import me.jameshunt.navfsm.FSMResult
 import me.jameshunt.navfsm.FragmentProxy
 import me.jameshunt.navfsm.NavFSMFragment
-import me.jameshunt.navfsm.test.LoginNavFSM
-import me.jameshunt.navfsm.test.LoginUIProxy
 import java.lang.ref.WeakReference
 import java.util.*
 

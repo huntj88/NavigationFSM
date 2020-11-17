@@ -24,7 +24,11 @@ kotlin {
         }
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":NavigationFSM"))
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
@@ -36,9 +40,9 @@ kotlin {
                 implementation("androidx.core:core-ktx:1.2.0")
             }
         }
-        val androidTest by getting
-        val iosMain by getting
-        val iosTest by getting
+        val androidTest by getting {}
+        val iosMain by getting {}
+        val iosTest by getting {}
     }
 }
 android {

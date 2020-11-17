@@ -12,7 +12,6 @@ import me.jameshunt.navfsm.AndroidUIInput
 import me.jameshunt.navfsm.DialogProxy
 import me.jameshunt.navfsm.FSMResult
 import me.jameshunt.navfsm.NavFSMDialogFragment
-import me.jameshunt.navfsm.test.ErrorUIProxy
 import java.lang.ref.WeakReference
 
 
