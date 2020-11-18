@@ -13,6 +13,10 @@ fun ExposedIosFSMOperations.Back.expose(): Unit = TODO()
 fun PlatformDependencies.expose(): Unit = TODO()
 fun FSMManager.expose(): Unit = TODO()
 
+fun iosConfigure(
+    uiRegistry: UIRegistry,
+    getInitialFlow: () -> FSM<Unit, Unit>
+) = me.jameshunt.navfsm.iosConfigure(uiRegistry, getInitialFlow)
 
 fun activeDeferred(
     current: CompletableDeferred<ExposedIosFSMOperations.ExposedResult>

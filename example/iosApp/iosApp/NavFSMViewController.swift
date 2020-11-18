@@ -9,12 +9,24 @@
 import Foundation
 import UIKit
 import SwiftUI
+import shared
+
+class IosDependencies: NFSMPlatformDependencies {
+    func flowEnd() {
+        print("FLOW ENDED")
+    }
+}
 
 final class NavFSMViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        self.add(asChildViewController: UIHostingController(rootView: ContentView()))
+    
+        NFSMFSMManager.init().doInit(
+            fsmOperations: NFSMIosFSMOperations(exposed: SwiftFSMPlatformOperations()),
+            platformDependencies: IosDependencies()
+        )
+        
         self.add(asChildViewController: TestViewController.storyboardInstance()!)
     }
 

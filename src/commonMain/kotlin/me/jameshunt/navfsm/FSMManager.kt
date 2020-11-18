@@ -2,6 +2,7 @@ package me.jameshunt.navfsm
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.native.concurrent.ThreadLocal
 import kotlin.reflect.KClass
 
 inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSMManager.proxy(): Proxy {
@@ -13,6 +14,7 @@ inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSMManager.proxy(): Proxy
 
 typealias UIRegistry = Map<KClass<UIProxy<*, *>>, () -> UIProxy<*, *>>
 
+@ThreadLocal
 object FSMManager {
     private var _root: FSMTreeNode? = null
     val root: FSMTreeNode
