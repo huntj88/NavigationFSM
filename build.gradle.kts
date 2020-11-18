@@ -50,6 +50,11 @@ kotlin {
         val iosTest by getting {}
     }
 }
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+}
+
 android {
     compileSdkVersion(29)
     defaultConfig {
