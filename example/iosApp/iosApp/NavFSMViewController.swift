@@ -14,7 +14,8 @@ final class NavFSMViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.add(asChildViewController: UIHostingController(rootView: ContentView()))
+//        self.add(asChildViewController: UIHostingController(rootView: ContentView()))
+        self.add(asChildViewController: TestViewController.storyboardInstance()!)
     }
 
     private func add(asChildViewController viewController: UIViewController) {
