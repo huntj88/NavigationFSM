@@ -105,6 +105,6 @@ class ErrorUIProxyImpl : ErrorUIProxy, DialogProxy {
         dialog as ErrorDialog
         this.restoreState(dialog)
         this.dialog = WeakReference(dialog)
-        dialog.proxy = this
+        dialog.setProxy(this)
     }
 }

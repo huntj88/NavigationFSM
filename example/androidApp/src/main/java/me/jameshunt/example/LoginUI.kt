@@ -81,6 +81,6 @@ class LoginUIProxyImpl : LoginUIProxy, FragmentProxy {
         fragment as LoginFragment
         this.restoreState(fragment)
         this.fragment = WeakReference(fragment)
-        fragment.proxy = this
+        fragment.setProxy(this)
     }
 }

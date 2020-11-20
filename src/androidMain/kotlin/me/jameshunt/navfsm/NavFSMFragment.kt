@@ -15,9 +15,13 @@ sealed class AndroidUIInput<out Input> {
 // Could just be input and output, but by putting a third
 // 'Proxy' generic type I can use that as input in code generation
 abstract class NavFSMFragment<Proxy: UIProxy<Input, Output>, Input, Output> : Fragment() {
-    var proxy: Proxy? = null
+    private var proxy: Proxy? = null
 
     private var newInput = false
+
+    fun setProxy(proxy: Proxy) {
+        this.proxy = proxy
+    }
 
     fun flowForResultAsync(): Deferred<FSMResult<Output>> {
         newInput = true
@@ -43,7 +47,7 @@ abstract class NavFSMFragment<Proxy: UIProxy<Input, Output>, Input, Output> : Fr
 // Could just be input and output, but by putting a third
 // 'Proxy' generic type I can use that as input in code generation
 abstract class NavFSMDialogFragment<Proxy: UIProxy<Input, Output>, Input, Output> : DialogFragment() {
-    var proxy: Proxy? = null
+    private var proxy: Proxy? = null
 
     private var newInput = false
 
@@ -53,6 +57,10 @@ abstract class NavFSMDialogFragment<Proxy: UIProxy<Input, Output>, Input, Output
                 activity?.onBackPressed()
             }
         }
+    }
+
+    fun setProxy(proxy: Proxy) {
+        this.proxy = proxy
     }
 
     fun flowForResultAsync(): Deferred<FSMResult<Output>> {
