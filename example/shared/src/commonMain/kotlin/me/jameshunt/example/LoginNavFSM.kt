@@ -85,8 +85,8 @@ class LoginNavFSMImpl : LoginNavFSM {
     }
 
     override suspend fun ShowError.handle(): StateAfterShowError {
-        return flow(flow = BlahNavFSM(), input = "input")
-//        return flow(proxy = errorDialogProxy, input = message)
+//        return flow(flow = BlahNavFSM(), input = "input")
+        return flow(proxy = errorDialogProxy, input = message)
             .onResult(
                 onComplete = { toShowForm() },
                 onBack = { toShowForm() }

@@ -25,9 +25,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             let rootvc = NavFSMViewController()
-            let view = UIView()
-            view.backgroundColor = UIColor.blue
-            rootvc.view = view
             window.rootViewController = rootvc
             self.window = window
             window.makeKeyAndVisible()

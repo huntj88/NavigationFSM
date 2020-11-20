@@ -33,8 +33,11 @@ object MainLoopDispatcher: CoroutineDispatcher(), Delay {
                 }
             } catch (err: Throwable) {
                 err.printStackTrace() // TODO
+                with(continuation) {
+                    resumeUndispatchedWithException(err)
+                }
                 // logError("UNCAUGHT", err.message ?: "", err)
-                throw err
+                // throw err
             }
         }
     }

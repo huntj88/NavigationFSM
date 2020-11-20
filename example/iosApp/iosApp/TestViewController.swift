@@ -11,14 +11,12 @@ import UIKit
 
 class TestViewController: UIViewController {
     
-    static func storyboardInstance() -> TestViewController? {
+    var proxy: LoginUIProxyImpl? = nil
+    
+    static func storyboardInstance() -> TestViewController {
         var vcType = String(describing: type(of: self))
         vcType.removeLast(5) // for ".type" suffix
         let storyboard: UIStoryboard = UIStoryboard(name: vcType, bundle: nil)
-        return storyboard.instantiateViewController(identifier: vcType) as? TestViewController
-    }
-    
-    override func viewDidLoad() {
-        print("hello")
+        return storyboard.instantiateViewController(identifier: vcType) as TestViewController
     }
 }

@@ -39,8 +39,9 @@ suspend inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSM<*, *>.flow(
     proxy: Proxy,
     input: In
 ): FSMResult<Out> {
+    println("kotlin input is: $input, for proxy: $proxy")
     val node = FSMManager.root.getNodeFor(this) ?: throw IllegalStateException()
-    return node.platformFSMOperations.showUI(proxy, input)
+    return node.platformFSMOperations.showUI(proxy, input).also { println("Also, output: $it") }
 }
 
 data class FSMTreeNode(

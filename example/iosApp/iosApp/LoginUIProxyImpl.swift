@@ -10,12 +10,17 @@ import Foundation
 import shared
 
 class LoginUIProxyImpl: LoginUIProxy {
-    var completableDeferred: Kotlinx_coroutines_coreCompletableDeferred = ExposeAPIKt.finishedDeferred()
     var input: Any? = nil
+    var backing: Kotlinx_coroutines_coreCompletableDeferred = ExposeAPIKt.finishedDeferred()
+    var completableDeferred: Kotlinx_coroutines_coreCompletableDeferred {
+        get {
+            return deferToUse()
+        }
+    }
     
     func deferToUse() -> Kotlinx_coroutines_coreCompletableDeferred {
-        let newOrCurrent = ExposeAPIKt.activeDeferred(current: completableDeferred)
-        completableDeferred = newOrCurrent
+        let newOrCurrent = ExposeAPIKt.activeDeferred(current: backing)
+        backing = newOrCurrent
         return newOrCurrent
     }
     
@@ -36,12 +41,17 @@ class LoginUIProxyImpl: LoginUIProxy {
 
 // copied from login
 class ErrorUIProxyImpl: ErrorUIProxy {
-    var completableDeferred: Kotlinx_coroutines_coreCompletableDeferred = ExposeAPIKt.finishedDeferred()
     var input: Any? = nil
+    var backing: Kotlinx_coroutines_coreCompletableDeferred = ExposeAPIKt.finishedDeferred()
+    var completableDeferred: Kotlinx_coroutines_coreCompletableDeferred {
+        get {
+            return deferToUse()
+        }
+    }
     
     func deferToUse() -> Kotlinx_coroutines_coreCompletableDeferred {
-        let newOrCurrent = ExposeAPIKt.activeDeferred(current: completableDeferred)
-        completableDeferred = newOrCurrent
+        let newOrCurrent = ExposeAPIKt.activeDeferred(current: backing)
+        backing = newOrCurrent
         return newOrCurrent
     }
     

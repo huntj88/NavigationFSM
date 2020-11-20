@@ -5,18 +5,16 @@ import me.jameshunt.navfsm.*
 import kotlin.reflect.KClass
 
 fun PlatformFSMOperations.expose(): Unit = TODO()
-fun IosFSMOperations.expose(): Unit = TODO()
-fun ExposedIosFSMOperations.expose(): Unit = TODO()
-fun ExposedIosFSMOperations.ExposedResult.expose(): Unit = TODO()
-fun ExposedIosFSMOperations.Complete.expose(): Unit = TODO()
-fun ExposedIosFSMOperations.Error.expose(): Unit = TODO()
-fun ExposedIosFSMOperations.Back.expose(): Unit = TODO()
 fun PlatformDependencies.expose(): Unit = TODO()
 fun FSMManager.expose(): Unit = TODO()
 fun LoginNavFSM.Credentials.expose(): Unit = TODO()
 
 fun loginUIProxyKClass(): KClass<LoginUIProxy> = LoginUIProxy::class
 fun errorUIProxyKClass(): KClass<ErrorUIProxy> = ErrorUIProxy::class
+
+fun complete(output: Any?): FSMResult.Complete<*> = FSMResult.Complete(output)
+fun error(error: Throwable): FSMResult.Error = FSMResult.Error(error)
+fun back(): FSMResult.Back = FSMResult.Back
 
 data class UIRegistryEntry(
     val kClass: KClass<UIProxy<*, *>>,
@@ -32,14 +30,14 @@ fun iosConfigure(
 )
 
 fun activeDeferred(
-    current: CompletableDeferred<ExposedIosFSMOperations.ExposedResult>
-): CompletableDeferred<ExposedIosFSMOperations.ExposedResult> {
+    current: CompletableDeferred<FSMResult<*>>
+): CompletableDeferred<FSMResult<*>> {
     return when (current.isActive) {
         true -> current
         false -> CompletableDeferred()
     }
 }
 
-fun finishedDeferred(): CompletableDeferred<ExposedIosFSMOperations.ExposedResult> {
-    return CompletableDeferred(value = ExposedIosFSMOperations.Back())
+fun finishedDeferred(): CompletableDeferred<FSMResult<*>> {
+    return CompletableDeferred(value = FSMResult.Back)
 }
