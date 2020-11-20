@@ -16,10 +16,19 @@ class SwiftFSMPlatformOperations: NFSMPlatformFSMOperations {
         return self
     }
     
+    func newVC(proxy: NFSMUIProxy) -> UIViewController {
+        switch String(describing: type(of: proxy)) {
+        case "LoginUIProxyImpl":
+            return LoginViewController.newVC(proxy: proxy) as LoginViewController
+        default:
+            return UIViewController()
+        }
+    }
+    
     func showUI(proxy: NFSMUIProxy, input: Any?, completionHandler: @escaping (NFSMFSMResult<AnyObject>?, Error?) -> Void) {
         (NFSMFSMManager.init().platformDependencies as! SwiftPlatformDependencies)
             .rootViewController
-            .pushViewController(TestViewController.storyboardInstance(), animated: true)
+            .pushViewController(newVC(proxy: proxy), animated: true)
         
         proxy.completableDeferred.await(completionHandler: { output, error in ((NFSMFSMResult<AnyObject>, Error?) -> Void).self
             completionHandler(output as! NFSMFSMResult<AnyObject>, error)

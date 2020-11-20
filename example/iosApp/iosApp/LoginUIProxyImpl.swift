@@ -18,20 +18,20 @@ class LoginUIProxyImpl: LoginUIProxy {
         }
     }
     
+    var viewController: LoginViewController? = nil
+    
     func deferToUse() -> Kotlinx_coroutines_coreCompletableDeferred {
         let newOrCurrent = ExposeAPIKt.activeDeferred(current: backing)
         backing = newOrCurrent
         return newOrCurrent
     }
     
-    var mostRecentVCProxy: VCProxy? = nil
-    
     func back() {
         
     }
 
     func complete(data: Any?) {
-        
+        completableDeferred.complete(value: ExposeAPIKt.complete(output: data))
     }
 
     func error(error: KotlinThrowable) {
@@ -55,8 +55,6 @@ class ErrorUIProxyImpl: ErrorUIProxy {
         return newOrCurrent
     }
     
-    var mostRecentVCProxy: VCProxy? = nil
-    
     func back() {
         
     }
@@ -68,8 +66,4 @@ class ErrorUIProxyImpl: ErrorUIProxy {
     func error(error: KotlinThrowable) {
         
     }
-}
-
-protocol VCProxy {
-    
 }

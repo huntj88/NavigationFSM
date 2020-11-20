@@ -7,37 +7,29 @@ import kotlin.coroutines.CoroutineContext
 // https://github.com/Kotlin/kotlinx.coroutines/issues/470#issuecomment-440080970
 
 @OptIn(InternalCoroutinesApi::class)
-object MainLoopDispatcher: CoroutineDispatcher(), Delay {
+object MainLoopDispatcher : CoroutineDispatcher(), Delay {
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
-        dispatch_async(dispatch_get_main_queue()) {
-            try {
-                block.run()
-            } catch (err: Throwable) {
-                err.printStackTrace() // TODO
-                // logError("UNCAUGHT", err.message ?: "", err)
-                throw err
-            }
+        val queue = dispatch_get_main_queue()
+        dispatch_async(queue) {
+            println("main Queue: $queue")
+            block.run()
         }
     }
 
 
-
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
-    override fun scheduleResumeAfterDelay(timeMillis: Long, continuation: CancellableContinuation<Unit>) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeMillis * 1_000_000), dispatch_get_main_queue()) {
-            try {
-                with(continuation) {
-                    resumeUndispatched(Unit)
-                }
-            } catch (err: Throwable) {
-                err.printStackTrace() // TODO
-                with(continuation) {
-                    resumeUndispatchedWithException(err)
-                }
-                // logError("UNCAUGHT", err.message ?: "", err)
-                // throw err
+    override fun scheduleResumeAfterDelay(
+        timeMillis: Long,
+        continuation: CancellableContinuation<Unit>
+    ) {
+        dispatch_after(
+            dispatch_time(DISPATCH_TIME_NOW, timeMillis * 1_000_000),
+            dispatch_get_main_queue()
+        ) {
+            with(continuation) {
+                resumeUndispatched(Unit)
             }
         }
     }
@@ -56,15 +48,12 @@ object MainLoopDispatcher: CoroutineDispatcher(), Delay {
                 disposed = true
             }
         }
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeMillis * 1_000_000), dispatch_get_main_queue()) {
-            try {
-                if (!handle.disposed) {
-                    block.run()
-                }
-            } catch (err: Throwable) {
-                err.printStackTrace() // TODO
-                // logError("UNCAUGHT", err.message ?: "", err)
-                throw err
+        dispatch_after(
+            dispatch_time(DISPATCH_TIME_NOW, timeMillis * 1_000_000),
+            dispatch_get_main_queue()
+        ) {
+            if (!handle.disposed) {
+                block.run()
             }
         }
 
