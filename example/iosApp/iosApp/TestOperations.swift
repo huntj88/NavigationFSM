@@ -25,7 +25,7 @@ class SwiftFSMPlatformOperations: NFSMPlatformFSMOperations {
         }
     }
     
-    func showUI(proxy: NFSMUIProxy, input: Any?, completionHandler: @escaping (NFSMFSMResult<AnyObject>?, Error?) -> Void) {
+    func showUI(proxy: NFSMUIProxy, completionHandler: @escaping (NFSMFSMResult<AnyObject>?, Error?) -> Void) {
         (NFSMFSMManager.init().platformDependencies as! SwiftPlatformDependencies)
             .rootViewController
             .pushViewController(newVC(proxy: proxy), animated: true)

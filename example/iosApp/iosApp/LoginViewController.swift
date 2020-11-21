@@ -17,9 +17,23 @@ class LoginViewController: UIViewController, FSMViewControllerProtocol {
     
     var proxy: LoginUIProxyImpl? = nil
     
+    @IBOutlet weak var label: UILabel!
+
     override func viewDidLoad() {
-        print("input into LoginViewController: ")
-        print(proxy?.input)
+        super.viewDidLoad()
+        
+        print("input into LoginViewController:")
+        print(proxy?.input ?? "nil input")
+
+        let tap = UITapGestureRecognizer(
+            target: self,
+            action: #selector(LoginViewController.tapFunction)
+        )
+        label.isUserInteractionEnabled = true
+        label.addGestureRecognizer(tap)
+    }
+    
+    @IBAction func tapFunction(sender: UITapGestureRecognizer) {
         complete(output: LoginNavFSMCredentials(username: "wow", password: "not wo"))
     }
     

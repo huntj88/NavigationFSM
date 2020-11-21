@@ -55,7 +55,7 @@ data class AndroidFSMOperations(private val viewId: Int) : PlatformFSMOperations
             ?: throw IllegalStateException()
     }
 
-    override suspend fun <In, Out> showUI(proxy: UIProxy<In, Out>, input: In): FSMResult<Out> {
+    override suspend fun <Out> showUI(proxy: UIProxy<*, Out>): FSMResult<Out> {
         val deferred = when (proxy) {
             is FragmentProxy -> showFragment(proxy).flowForResultAsync()
             is DialogProxy -> showDialog(proxy).flowForResultAsync()
