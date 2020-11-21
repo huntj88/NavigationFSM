@@ -24,7 +24,11 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+                implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1-native-mt"){
+                    version {
+                        strictly("1.4.1-native-mt")
+                    }
+                }
             }
         }
         val commonTest by getting {
@@ -35,7 +39,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1-native-mt")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
                 implementation("androidx.appcompat:appcompat:1.2.0")
                 implementation("androidx.core:core-ktx:1.2.0")

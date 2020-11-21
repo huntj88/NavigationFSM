@@ -1,5 +1,6 @@
 package me.jameshunt.example
 
+import kotlinx.coroutines.delay
 import me.jameshunt.navfsm.*
 import me.jameshunt.example.LoginNavFSM.*
 import me.jameshunt.example.LoginNavFSM.LoginFlowState.*
@@ -78,6 +79,7 @@ class LoginNavFSMImpl : LoginNavFSM {
     }
 
     override suspend fun AttemptLogin.handle(credentials: Credentials): StateAfterAttemptLogin {
+        delay(1000L) // simulate network request
         return when (credentials.username == "wow" && credentials.password == "not wow") {
             true -> toDone()
             false -> toShowError("invalid credentials")

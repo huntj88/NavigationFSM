@@ -27,7 +27,11 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":NavigationFSM"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+                implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1-native-mt"){
+                    version {
+                        strictly("1.4.1-native-mt")
+                    }
+                }
             }
         }
         val commonTest by getting {
