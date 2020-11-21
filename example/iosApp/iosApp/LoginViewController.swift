@@ -10,13 +10,7 @@ import Foundation
 import UIKit
 import shared
 
-class LoginViewController: UIViewController, FSMViewControllerProtocol {
-    typealias Proxy = LoginUIProxy
-    typealias In = KotlinUnit
-    typealias Out = LoginNavFSMCredentials
-    
-    var proxy: LoginUIProxyImpl? = nil
-    
+class LoginViewController: FSMViewController<LoginUIProxy, KotlinUnit, LoginNavFSMCredentials> {
     @IBOutlet weak var label: UILabel!
 
     override func viewDidLoad() {
@@ -53,15 +47,24 @@ class LoginViewController: UIViewController, FSMViewControllerProtocol {
     }
 }
 
-protocol FSMViewControllerProtocol {
+// optional to use, can implement FSMViewControllerProtocol directly on ViewController
+class FSMViewController<ProxyType: NFSMUIProxy, Input, Output> : UIViewController, FSMViewControllerP {
+    typealias Proxy = ProxyType
+    typealias In = Input
+    typealias Out = Output
+
+    var proxy: Proxy? = nil
+}
+
+protocol FSMViewControllerP {
     associatedtype Proxy: NFSMUIProxy
     associatedtype In
     associatedtype Out
     
-    var proxy: LoginUIProxyImpl? { get set }
+    var proxy: Proxy? { get set }
 }
 
-extension FSMViewControllerProtocol {
+extension FSMViewControllerP {
     func complete(output: Out) {
         proxy!.complete(data: output)
     }
