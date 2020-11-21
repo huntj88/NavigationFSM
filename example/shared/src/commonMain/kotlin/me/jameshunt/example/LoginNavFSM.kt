@@ -15,8 +15,8 @@ interface LoginNavFSM : FSM<Unit, Unit> {
         interface StateAfterShowError : StateAfter
 
         object ShowForm : LoginFlowState(), StateAfterShowError
-        data class AttemptLogin(val credentials: Credentials) : LoginFlowState(), StateAfterShowForm
-        data class ShowError(val message: String) : LoginFlowState(), StateAfterAttemptLogin
+        data class AttemptLogin(internal val credentials: Credentials) : LoginFlowState(), StateAfterShowForm
+        data class ShowError(internal val message: String) : LoginFlowState(), StateAfterAttemptLogin
 
         object Back : LoginFlowState(), StateAfterShowForm
         data class Done(val output: Unit) : LoginFlowState(), StateAfterAttemptLogin
@@ -28,8 +28,8 @@ interface LoginNavFSM : FSM<Unit, Unit> {
             val currentState = nextState
             nextState = when (currentState) {
                 is ShowForm -> currentState.handle()
-                is AttemptLogin -> currentState.handle()
-                is ShowError -> currentState.handle()
+                is AttemptLogin -> currentState.handle(currentState.credentials)
+                is ShowError -> currentState.handle(currentState.message)
                 else -> throw IllegalStateException()
             }
         }
@@ -44,8 +44,8 @@ interface LoginNavFSM : FSM<Unit, Unit> {
     }
 
     suspend fun ShowForm.handle(): StateAfterShowForm
-    suspend fun AttemptLogin.handle(): StateAfterAttemptLogin
-    suspend fun ShowError.handle(): StateAfterShowError
+    suspend fun AttemptLogin.handle(credentials: Credentials): StateAfterAttemptLogin
+    suspend fun ShowError.handle(message: String): StateAfterShowError
 
     fun ShowError.toShowForm() = ShowForm
     fun ShowForm.toAttemptLogin(credentials: Credentials) = AttemptLogin(credentials)
@@ -77,14 +77,14 @@ class LoginNavFSMImpl : LoginNavFSM {
         )
     }
 
-    override suspend fun AttemptLogin.handle(): StateAfterAttemptLogin {
+    override suspend fun AttemptLogin.handle(credentials: Credentials): StateAfterAttemptLogin {
         return when (credentials.username == "wow" && credentials.password == "not wow") {
             true -> toDone()
             false -> toShowError("invalid credentials")
         }
     }
 
-    override suspend fun ShowError.handle(): StateAfterShowError {
+    override suspend fun ShowError.handle(message: String): StateAfterShowError {
 //        return flow(flow = BlahNavFSM(), input = "input")
         return flow(proxy = errorDialogProxy, input = message)
             .onResult(
