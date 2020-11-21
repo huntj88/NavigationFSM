@@ -1,13 +1,35 @@
 //
-//  LoginUIProxyImpl.swift
+//  Generated.swift
 //  iosApp
 //
-//  Created by James Hunt on 11/16/20.
+//  Created by James Hunt on 11/21/20.
 //  Copyright © 2020 orgName. All rights reserved.
 //
 
 import Foundation
+import UIKit
 import shared
+
+func newVC(proxy: NFSMUIProxy) -> UIViewController {
+    switch String(describing: type(of: proxy)) {
+    case "LoginUIProxyImpl":
+        return LoginViewController.newVC(proxy: proxy) as LoginViewController
+    default:
+        // TODO: error proxy
+        return UIViewController()
+    }
+}
+
+func createUIRegistry() -> [UIRegistryEntry] {
+    return [
+        UIRegistryEntry(kClass: ExposeAPIKt.loginUIProxyKClass(), newInstance: {
+            return LoginUIProxyImpl()
+        }),
+        UIRegistryEntry(kClass: ExposeAPIKt.errorUIProxyKClass(), newInstance: {
+            return ErrorUIProxyImpl()
+        })
+    ]
+}
 
 class LoginUIProxyImpl: LoginUIProxy {
     var input: Any? = nil
@@ -60,7 +82,7 @@ class ErrorUIProxyImpl: ErrorUIProxy {
     }
 
     func complete(data: Any?) {
-        
+         completableDeferred.complete(value: ExposeAPIKt.complete(output: data))
     }
 
     func error(error: KotlinThrowable) {

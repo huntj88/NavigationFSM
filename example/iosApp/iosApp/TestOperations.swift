@@ -16,15 +16,6 @@ class SwiftFSMPlatformOperations: NFSMPlatformFSMOperations {
         return self
     }
     
-    func newVC(proxy: NFSMUIProxy) -> UIViewController {
-        switch String(describing: type(of: proxy)) {
-        case "LoginUIProxyImpl":
-            return LoginViewController.newVC(proxy: proxy) as LoginViewController
-        default:
-            return UIViewController()
-        }
-    }
-    
     func showUI(proxy: NFSMUIProxy, completionHandler: @escaping (NFSMFSMResult<AnyObject>?, Error?) -> Void) {
         (NFSMFSMManager.init().platformDependencies as! SwiftPlatformDependencies)
             .rootViewController

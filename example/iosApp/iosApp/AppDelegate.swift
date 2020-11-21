@@ -8,17 +8,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        let uiRegistry = [
-            UIRegistryEntry(kClass: ExposeAPIKt.loginUIProxyKClass(), newInstance: { ((proxy: NFSMUIProxy) -> NFSMUIProxy).self
-                return LoginUIProxyImpl()
-            }),
-            UIRegistryEntry(kClass: ExposeAPIKt.errorUIProxyKClass(), newInstance: { ((proxy: NFSMUIProxy) -> NFSMUIProxy).self
-                return ErrorUIProxyImpl()
-            })
-        ]
-        
-        ExposeAPIKt.iosConfigure(uiRegistry: uiRegistry, getInitialFlow: { LoginNavFSMImpl() })
-        
+        ExposeAPIKt.iosConfigure(uiRegistry: createUIRegistry(), getInitialFlow: { LoginNavFSMImpl() })
         return true
     }
 
