@@ -20,6 +20,16 @@ func newVC(proxy: NFSMUIProxy) -> UIViewController {
     }
 }
 
+extension LoginViewController {
+    static func newVC(proxy: NFSMUIProxy) -> LoginViewController {
+        let vc = LoginViewController.newInstance() as! LoginViewController
+        let castProxy = proxy as! LoginUIProxyImpl
+        vc.proxy = castProxy
+        castProxy.viewController = vc
+        return vc
+    }
+}
+
 func createUIRegistry() -> [UIRegistryEntry] {
     return [
         UIRegistryEntry(kClass: ExposeAPIKt.loginUIProxyKClass(), newInstance: {

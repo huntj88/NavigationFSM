@@ -9,11 +9,11 @@ class AndroidDependencies(
 ) : PlatformDependencies {
 
     fun resume() {
-        FSMManager.root.walkTreeForOperation { it.android().resume() }
+        FSMManager.root.walkTreeForOperation { it.platformFSMOperations.android().resume() }
     }
 
     fun back() {
-        FSMManager.root.walkTreeForOperation { it.android().back() }
+        FSMManager.root.walkTreeForOperation { it.platformFSMOperations.android().back() }
     }
 
     override fun flowEnd() {

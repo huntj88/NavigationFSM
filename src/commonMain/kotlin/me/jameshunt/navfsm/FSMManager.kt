@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.reflect.KClass
 
-inline fun <reified Proxy : UIProxy<In, Out>, In, Out> FSMManager.proxy(): Proxy {
+inline fun <reified Proxy : UIProxy<*, *>> FSMManager.proxy(): Proxy {
     return Proxy::class
         .let { it as KClass<UIProxy<*, *>> }
         .let { uiRegistry[it] ?: error("missing ui registration for ${Proxy::class}") }

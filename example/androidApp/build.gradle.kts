@@ -20,7 +20,7 @@ dependencies {
     implementation("com.google.android.material:material:1.2.1")
     implementation(project(":NavigationFSM"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1-native-mt")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1-native-mt")
 }
 
 tasks.register<me.jameshunt.navfsm.compile.GenerateAndroidProxiesTask>("generateProxies")

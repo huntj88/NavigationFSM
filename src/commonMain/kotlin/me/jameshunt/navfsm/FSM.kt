@@ -57,17 +57,17 @@ data class FSMTreeNode(
         }
     }
 
-    fun walkTreeForOperation(operation: (PlatformFSMOperations) -> Unit): Boolean {
+    fun walkTreeForOperation(operation: (FSMTreeNode) -> Unit): Boolean {
         this.children.firstOrNull()?.let {
             if (!it.walkTreeForOperation(operation)) {
-                operation(it.platformFSMOperations)
+                operation(it)
             }
             return true
         }
 
         return when (this == FSMManager.root) {
             true -> {
-                operation(this.platformFSMOperations)
+                operation(this)
                 true
             }
             false -> false

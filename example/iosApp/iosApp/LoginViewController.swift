@@ -31,19 +31,11 @@ class LoginViewController: FSMViewController<LoginUIProxy, KotlinUnit, LoginNavF
         complete(output: LoginNavFSMCredentials(username: "wow", password: "not wo"))
     }
     
-    static func newVC(proxy: NFSMUIProxy) -> LoginViewController {
-        let vc = LoginViewController.storyboardInstance()
-        let castProxy = proxy as! LoginUIProxyImpl
-        vc.proxy = castProxy
-        castProxy.viewController = vc
-        return vc
-    }
-    
-    private static func storyboardInstance() -> LoginViewController {
+    static func newInstance() -> UIViewController {
         var vcType = String(describing: type(of: self))
         vcType.removeLast(5) // for ".type" suffix
         let storyboard: UIStoryboard = UIStoryboard(name: vcType, bundle: nil)
-        return storyboard.instantiateViewController(identifier: vcType) as LoginViewController
+        return storyboard.instantiateViewController(identifier: vcType)
     }
 }
 
