@@ -14,8 +14,10 @@ func newVC(proxy: NFSMUIProxy) -> UIViewController {
     switch String(describing: type(of: proxy)) {
     case "LoginUIProxyImpl":
         return LoginViewController.newVC(proxy: proxy) as LoginViewController
+    case "ErrorUIProxyImpl":
+        return ErrorViewController.newVC(proxy: proxy) as ErrorViewController
     default:
-        // TODO: error proxy
+        // TODO
         return UIViewController()
     }
 }
@@ -24,6 +26,16 @@ extension LoginViewController {
     static func newVC(proxy: NFSMUIProxy) -> LoginViewController {
         let vc = LoginViewController.newInstance() as! LoginViewController
         let castProxy = proxy as! LoginUIProxyImpl
+        vc.proxy = castProxy
+        castProxy.viewController = vc
+        return vc
+    }
+}
+
+extension ErrorViewController {
+    static func newVC(proxy: NFSMUIProxy) -> ErrorViewController {
+        let vc = ErrorViewController.newInstance() as! ErrorViewController
+        let castProxy = proxy as! ErrorUIProxyImpl
         vc.proxy = castProxy
         castProxy.viewController = vc
         return vc
@@ -59,7 +71,7 @@ class LoginUIProxyImpl: LoginUIProxy {
     }
     
     func back() {
-        
+        completableDeferred.complete(value: ExposeAPIKt.back())
     }
 
     func complete(data: Any?) {
@@ -81,6 +93,8 @@ class ErrorUIProxyImpl: ErrorUIProxy {
         }
     }
     
+    var viewController: ErrorViewController? = nil
+    
     func deferToUse() -> Kotlinx_coroutines_coreCompletableDeferred {
         let newOrCurrent = ExposeAPIKt.activeDeferred(current: backing)
         backing = newOrCurrent
@@ -88,11 +102,11 @@ class ErrorUIProxyImpl: ErrorUIProxy {
     }
     
     func back() {
-        
+        completableDeferred.complete(value: ExposeAPIKt.back())
     }
 
     func complete(data: Any?) {
-         completableDeferred.complete(value: ExposeAPIKt.complete(output: data))
+        completableDeferred.complete(value: ExposeAPIKt.complete(output: data))
     }
 
     func error(error: KotlinThrowable) {

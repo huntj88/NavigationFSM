@@ -39,13 +39,35 @@ class LoginViewController: FSMViewController<LoginUIProxy, KotlinUnit, LoginNavF
     }
 }
 
-// optional to use, can implement FSMViewControllerProtocol directly on ViewController
-class FSMViewController<ProxyType: NFSMUIProxy, Input, Output> : UIViewController, FSMViewControllerP {
+class ErrorViewController: FSMViewController<ErrorUIProxy, String, KotlinUnit> {
+    @IBOutlet weak var label: UILabel!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        print("input into ErrorViewController:")
+        print(proxy?.input ?? "nil input")
+    }
+    
+    static func newInstance() -> UIViewController {
+        return ErrorViewController()
+    }
+}
+
+class FSMViewController<ProxyType: NFSMUIProxy, Input, Output> : UIViewController, FSMViewControllerP, Backable {
     typealias Proxy = ProxyType
     typealias In = Input
     typealias Out = Output
 
     var proxy: Proxy? = nil
+    
+    func back() {
+        proxy!.back()
+    }
+}
+
+protocol Backable {
+    func back()
 }
 
 protocol FSMViewControllerP {

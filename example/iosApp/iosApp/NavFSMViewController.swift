@@ -13,6 +13,13 @@ import shared
 
 final class NavFSMViewController: UINavigationController {
     
+    override func popViewController(animated: Bool) -> UIViewController? {
+        // TODO: does not really work
+        let vc = topViewController as! Backable
+        vc.back()
+        return topViewController
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
