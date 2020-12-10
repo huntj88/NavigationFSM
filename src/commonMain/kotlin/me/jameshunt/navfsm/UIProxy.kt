@@ -20,4 +20,5 @@ interface PlatformDependencies {
 interface PlatformFSMOperations {
     suspend fun <Out> showUI(proxy: UIProxy<*, Out>): Deferred<FSMResult<Out>>
     fun createChildOperations(): PlatformFSMOperations
+    fun resume()
 }

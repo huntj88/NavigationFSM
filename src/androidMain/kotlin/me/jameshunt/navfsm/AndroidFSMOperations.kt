@@ -10,10 +10,11 @@ class AndroidDependencies(
 ) : PlatformDependencies {
 
     fun resume() {
-        FSMManager.root.findGroup().getFSMLeafs().forEach {
-            it.platformFSMOperations.android().resume()
+        val group = FSMManager.root.findGroup()
+        group.platformFSMOperations.resume()
+        group.getFSMLeafs().forEach {
+            it.platformFSMOperations.resume()
         }
-//        FSMManager.root.walkTreeForOperation { it.platformFSMOperations.android().resume() }
     }
 
     fun back() {
@@ -28,7 +29,6 @@ class AndroidDependencies(
     }
 }
 
-fun PlatformFSMOperations.android(): AndroidFSMOperations = this as AndroidFSMOperations
 data class AndroidFSMOperations(private val viewId: Int, private val fragmentContainerTag: String) : PlatformFSMOperations {
 
     var mostRecentFragmentProxy: FragmentProxy? = null
@@ -39,7 +39,7 @@ data class AndroidFSMOperations(private val viewId: Int, private val fragmentCon
 
     override fun createChildOperations(): PlatformFSMOperations = this.copy()
 
-    fun resume() {
+    override fun resume() {
         val currentFragment = fragmentManager
             .fragments
             .firstOrNull { it.tag == mostRecentFragmentProxy?.tag }

@@ -18,10 +18,6 @@ class SimpleGroupFragment: NavFSMFragment<SimpleGroupProxy, Unit, Unit>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.simple_group_container, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        complete(Unit)
-    }
 }
 
 // generated
@@ -90,6 +86,15 @@ class SingleGroupAndroidOperations: PlatformFSMOperations {
     override suspend fun <Out> showUI(proxy: UIProxy<*, Out>): Deferred<FSMResult<Out>> {
         return showFragment(proxy = proxy as FragmentProxy)
             .flowForResultAsync() as Deferred<FSMResult<Out>>
+    }
+
+    override fun resume() {
+        val proxy = groupFragmentProxy!!
+        val fragment = fragmentManager.findFragmentByTag(proxy.tag) as? NavFSMFragment<*, *, *>
+
+        fragment
+            ?.let { proxy.bind(it) }
+            ?: showFragment(proxy = groupFragmentProxy as FragmentProxy)
     }
 
     override fun createChildOperations(): PlatformFSMOperations {
