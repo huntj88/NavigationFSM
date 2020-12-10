@@ -1,6 +1,7 @@
 package me.jameshunt.navfsm
 
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 
 interface UIProxy<In, Out> {
     var input: In?
@@ -17,6 +18,6 @@ interface PlatformDependencies {
 }
 
 interface PlatformFSMOperations {
-    suspend fun <Out> showUI(proxy: UIProxy<*, Out>): FSMResult<Out>
-    fun duplicate(): PlatformFSMOperations
+    suspend fun <Out> showUI(proxy: UIProxy<*, Out>): Deferred<FSMResult<Out>>
+    fun createChildOperations(): PlatformFSMOperations
 }

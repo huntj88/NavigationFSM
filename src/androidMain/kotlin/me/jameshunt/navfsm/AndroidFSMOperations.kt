@@ -1,6 +1,7 @@
 package me.jameshunt.navfsm
 
 import androidx.fragment.app.FragmentManager
+import kotlinx.coroutines.Deferred
 import java.lang.ref.WeakReference
 
 class AndroidDependencies(
@@ -9,11 +10,17 @@ class AndroidDependencies(
 ) : PlatformDependencies {
 
     fun resume() {
-        FSMManager.root.walkTreeForOperation { it.platformFSMOperations.android().resume() }
+        FSMManager.root.findGroup().getFSMLeafs().forEach {
+            it.platformFSMOperations.android().resume()
+        }
+//        FSMManager.root.walkTreeForOperation { it.platformFSMOperations.android().resume() }
     }
 
     fun back() {
-        FSMManager.root.walkTreeForOperation { it.platformFSMOperations.android().back() }
+//        FSMManager.root.findGroup().getFSMLeafs().forEach {
+//            it.platformFSMOperations.android().back() // todo: delegate to the "active" FSM
+//        }
+//        FSMManager.root.walkTreeForOperation { it.platformFSMOperations.android().back() }
     }
 
     override fun flowEnd() {
@@ -22,15 +29,15 @@ class AndroidDependencies(
 }
 
 fun PlatformFSMOperations.android(): AndroidFSMOperations = this as AndroidFSMOperations
-data class AndroidFSMOperations(private val viewId: Int) : PlatformFSMOperations {
+data class AndroidFSMOperations(private val viewId: Int, private val fragmentContainerTag: String) : PlatformFSMOperations {
 
     var mostRecentFragmentProxy: FragmentProxy? = null
     var mostRecentDialogProxy: DialogProxy? = null
 
     private val fragmentManager: FragmentManager
-        get() = (FSMManager.platformDependencies as AndroidDependencies).fragmentManager
+        get() = (FSMManager.platformDependencies as AndroidDependencies).fragmentManager.findFragmentByTag(fragmentContainerTag)!!.childFragmentManager
 
-    override fun duplicate(): PlatformFSMOperations = this.copy()
+    override fun createChildOperations(): PlatformFSMOperations = this.copy()
 
     fun resume() {
         val currentFragment = fragmentManager
@@ -55,14 +62,14 @@ data class AndroidFSMOperations(private val viewId: Int) : PlatformFSMOperations
             ?: throw IllegalStateException()
     }
 
-    override suspend fun <Out> showUI(proxy: UIProxy<*, Out>): FSMResult<Out> {
+    override suspend fun <Out> showUI(proxy: UIProxy<*, Out>): Deferred<FSMResult<Out>> {
         val deferred = when (proxy) {
             is FragmentProxy -> showFragment(proxy).flowForResultAsync()
             is DialogProxy -> showDialog(proxy).flowForResultAsync()
             else -> TODO("$proxy")
         }
 
-        return deferred.await() as FSMResult<Out>
+        return deferred as Deferred<FSMResult<Out>>
     }
 
     private fun showFragment(proxy: FragmentProxy): NavFSMFragment<*, *, *> {

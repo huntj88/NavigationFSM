@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             }
             false -> FSMManager.init(
                 platformDependencies = platformDependencies,
-                fsmOperations = AndroidFSMOperations(R.id.fragment_container)
+                fsmOperations = SingleGroupAndroidOperations()
             )
         }
     }
@@ -54,7 +54,9 @@ class NavFSMConfigImpl: NavFSMConfig {
             getInitialFlow = { LoginNavFSMImpl() },
             uiRegistry = mapOf(
                 LoginUIProxy::class as KClass<UIProxy<*, *>> to { LoginUIProxyImpl() },
-                ErrorUIProxy::class as KClass<UIProxy<*, *>> to { ErrorUIProxyImpl() }
+                ErrorUIProxy::class as KClass<UIProxy<*, *>> to { ErrorUIProxyImpl() },
+                ModalGroupProxy::class as KClass<UIProxy<*, *>> to { ModalGroupProxy() },
+                SimpleGroupProxy::class as KClass<UIProxy<*, *>> to { SimpleGroupProxyImpl() },
             )
         )
     }

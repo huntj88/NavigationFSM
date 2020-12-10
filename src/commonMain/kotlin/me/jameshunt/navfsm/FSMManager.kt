@@ -52,7 +52,7 @@ object FSMManager {
         scope.launch {
             _uiRegistry = uiRegistry
             _root = FSMTreeNode(
-                flow = initialFlow(),
+                flow = SimpleGroupFSM(initialFlow()),
                 children = mutableListOf(),
                 platformFSMOperations = fsmOperations
             )
