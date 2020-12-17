@@ -18,10 +18,9 @@ class AndroidDependencies(
     }
 
     fun back() {
-//        FSMManager.root.findGroup().getFSMLeafs().forEach {
-//            it.platformFSMOperations.android().back() // todo: delegate to the "active" FSM
-//        }
-//        FSMManager.root.walkTreeForOperation { it.platformFSMOperations.android().back() }
+        FSMManager.root.findGroup().getFSMLeafs().forEach {
+            (it.platformFSMOperations as AndroidFSMOperations).back() // todo: delegate to the "active" FSM
+        }
     }
 
     override fun flowEnd() {
